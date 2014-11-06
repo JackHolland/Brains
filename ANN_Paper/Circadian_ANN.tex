@@ -1,0 +1,159 @@
+\documentclass[prl,amsmath,amssymb,floatfix,superscriptaddress,notitlepage,twocolumn]{revtex4}
+\usepackage{algorithm2e}
+\usepackage{graphicx, tikz}
+\usepackage{hyperref}
+\usepackage{bm}
+\usepackage{amssymb}
+\usepackage{xifthen}
+\usepackage{color}
+\usepackage{datetime}
+\usepackage{float}
+\usepackage{bm}
+\usepackage{changepage}
+\usepackage{bbold}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+%editing commands for the users in our group (You can make more)
+\newcommand{\Damian}[1]{\textcolor{magenta}{(Damian: #1)}}
+\newcommand{\Alec}[1]{\textcolor{blue}{(Alec: #1)}}
+\newcommand{\Jack}[1]{\textcolor{green}{(Jack: #1)}}
+\newcommand{\Rawan}[1]{\textcolor{red}{(Rawan: #1)}}
+
+
+%commands to make math expressions easier
+\newcommand{\ee}[1]{\begin{align} #1 \end{align}} 						%align environment
+\newcommand{\vc}[1]{\vec{\mathbf{#1}}} 								%arrowed bold vector
+\newcommand{\intg}[2]{\int \! \mathrm{d}^{#1}\vc{#2} \ }					%integral with measure
+\newcommand{\nn}[1][]{\ifthenelse{\isempty{#1}}{\nonumber \\}{\nonumber}}	%nonumber shortcut
+\newcommand{\dv}{\partial }											%partial derivative shortcut
+\newcount\colveccount												%column vector
+\newcommand*\colvec[1]{
+        \global\colveccount#1
+        \begin{bmatrix}
+        \colvecnext
+}
+\def\colvecnext#1{
+        #1
+        \global\advance\colveccount-1
+        \ifnum\colveccount>0
+                \\
+                \expandafter\colvecnext
+        \else
+                \end{bmatrix}
+        \fi
+}
+
+
+
+\begin{document}
+
+\title{Percieving Circadian Gene Expression through Artificial Neural Networks}
+
+\author{Damian Sowinski}
+\email{Damian.Sowinski.GR@dartmouth.edu}
+\affiliation{Center for Cosmic Origins \\Department of Physics and Astronomy, Dartmouth College}
+
+\author{Alexander Crowell}
+\email{Alexander.M.Crowell.GR@dartmouth.edu}
+\affiliation{Department of Biology, Dartmouth College}
+
+\author{Jack Holland}
+\email{Jack.E.Holland.GR@dartmouth.edu}
+\affiliation{Department of Computer Science, Dartmouth College,Hanover, NH 03755, USA}
+
+\author{Rawan Al Ghofaili}
+\email{Rawan.al.Ghofaili.GR@dartmouth.edu}
+\affiliation{Department of Computer Science, Dartmouth College,Hanover, NH 03755, USA}
+
+
+\date{Last Updated: \today, \currenttime}
+
+\begin{abstract}
+
+Science is done!
+
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+\section{Artificial Neural Networks}
+In this section we go over the theoretical background of how to build an ANN, develop the formalism behind the backpropogation algorithm, and discuss possible candidates for tunable hyperparameters/functions used. We will develop both the feed forward and back prop algorithms for completeness. 
+
+ANNs are a supervised machine learning algorithm used for classification problems. Given some labeled set of data $\mathcal{D}=\{(\vc x,\vc y)_i\}_{i=1}^D$, where to each multidimensional datum $\vc x$ there is an associated multidimensional label $\vc y$, the ANN learns from $\mathcal{D}$ how to place labels on new data. Processing a datum by the network is accomplished via the \textit{feed forward} algorithm, while training is done through the \textit{back propogation} algorithm. 
+
+The basic building block of an ANN is the perceptron. $N$ signals go into the perceptron, are weighted, summed, and then put through some activation function to create an output signal:
+\ee{
+\label{perceptron}
+\text{output}=\theta(\sum_{i=0}^{N}w_i\times\text{input}_i)
+}
+The form of the \textbf{activation function}, $\theta$ is typcally chosen to be one that gives a value of $1$ for arguments larger than some threshhold, and $0$ otherwise. The backpropogation algorithm requires this function to be both differentiable and invertible, so typical choices include the logistic, arctan, and hyperbolic tangent functions. Note also that the sum begins at $0$, leading to $N+1$ inputs. The $0^{th}$ input is always taken to be $1$, and its corresponding weight is known as the \textbf{bias}.
+
+We can stack perceptrons into layers, and in turn stack those together so that the inputs of the $l^{th}$ layer are the outputs coming from the $(l-1)^{th}$ layer. This is the basic form of an ANN. We need only specify the architecture of the ANN (number of layers/\{Input dimensionality,number of perceptrons in each layer\}), which will be $L/\{N_0,N_1,\dots,N_L\}$. Note that $N_0$ represents the dimensionality of the input signal, and $N_L$ is the dimensionality of the output layer. Between each pair of layers there is a corresponsing weight matrix, $\textbf{w}^{(l)}:\mathbb{R}^{N_{l-1}}\rightarrow\mathbb{R}^{N_l}$, the components of which are $w_{ij}^{(l)}$, where $l$ is the target layer, $i$ is the index of the \textit{to} perceptron in the target layer, and $j$ is the \textit{from} perceptron in the domain layer. We denote the set of all these matrices \textbf{W}, and refer to this set as the \textbf{architecture} of our ANN. With these definitions in hand, we can write the output of the $i^{th}$ perceptron in the $l^{th}$ layer in compact form:
+\ee{
+x^{(l)}_i=\theta(\sum_{j=0}^{N_{l-1}}w^{(l)}_{ij}x^{(l-1)}_j)
+}
+where once again,, the $w^{(l)}_{i0}$'s represent biases. 
+
+With the architecture in place, we can now easily state the feed forward algorithm. It is nothing more than allowing an input signal propagate through the network, and eventually pop out at the end.
+
+\begin{algorithm}[H]
+\caption{Feed Forward}\label{feed_forward}
+\begin{algorithmic}[]
+\Procedure{FeedForward}{$\vc x^{(0)}$,\textbf{W}}\\
+\State $L \gets \text{number of layers in }\textbf{W}$
+\State $N_l \gets \text{number of perceptrons in } \textbf{w}^{(l)}\in\textbf{W}$
+\State $N_0 \gets \text{dim(domain(}(\vc x^{(0)})$\\
+
+\State \textbf{for} $l=1,2,\dots,L$
+\State \hspace{.25cm}$x^{(l-1)}_0 \gets 1$
+\State \hspace{.25cm}\textbf{for} $i=1,2,\dots,N_l$
+\State \hspace{.25cm}\hspace{.25cm}$x^{(l)}_i\gets\theta(\sum_{j=0}^{N_{l-1}}w^{(l)}_{ij}x^{(l-1)}_j)$\Comment{ and store}
+\State \hspace{.25cm}\textbf{end}
+\State \textbf{end}\\
+
+\State \textbf{return} \textbf{X}$=(\vc x^{(0)},\vc x^{(1)},\dots,\vc x^{(L)})$\\
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+This is all fine and dandy, but what we want is to be able to train the network based on the known labels. We need to compare the output of the network with the known label, define an error based on that comparison, and then alter the weights in the network so as to decrease that error. Furthermore, when the weights are changed, we do not want them to take on any values (one can imagine one weight becoming so high that it dominates the flow of signals in the ANN), so we must also regularize the way in which the error function is causing the weights to change. These statements can be made more precise.
+
+Take a datum $(\vc x^{(0)},\vc y)$ and process the input to get an output $(\vc x^{(L)},\vc y)$. 
+
+
+\begin{algorithm}[H]
+\caption{Back Propogation}\label{back_prop}
+\begin{algorithmic}[]
+\Procedure{BackProp}{\textbf{X}, $\vc y$, \textbf{W}}\\
+\State $L \gets \text{number of layers in }\textbf{W}$
+\State $N_l \gets \text{dimensionality of each } \vc x^{(l)} \in \textbf{X}$\\
+
+\State \textbf{for} $l=L,L-1,\dots,,2,1$
+\State \hspace{.25cm}\textbf{for} $i = 1,2,\cdots, N_l$
+\State \hspace{.50cm}\textbf{if} $l=L$
+\State \hspace{.75cm} $\delta^{(l)}_i \gets \phi(x_i^{(l)})\nabla_i E$
+\State \hspace{.50cm}\textbf{else}
+\State \hspace{.75cm} $\delta^{(l)}_i\gets \phi(x^{(l)}_i)\sum_{j=0}^{N_{l+1}}\delta^{(l+1)}_jw^{(l+1)}_{ji}$
+\State \hspace{.50cm}\textbf{end}
+\State \hspace{.50cm}\textbf{for} $j=1,2,\dots,N_{l-1}$
+\State \hspace{.75cm}$w^{(l)}_{ij}\gets w^{(l)}_{ij}-\eta\left(\nabla^{(l)}_{ij}R+\delta^{(l)}_ix^{(l-1)}_j\right)$
+\State \hspace{.50cm}\textbf{end}
+\State \hspace{.25cm}\textbf{end}
+\State \textbf{end}\\
+
+
+\State \textbf{return} \textbf{W}\\
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\section{Data}
+
+\section{Experiment}
+
+\section{Conclusion}
+
+\end{document}
