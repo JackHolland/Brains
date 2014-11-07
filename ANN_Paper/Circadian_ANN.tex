@@ -170,6 +170,20 @@ Take a datum $(\vc x^{(0)},\vc y)$ and process the input to get an output $(\vc 
 \end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}[H]
+\caption{Cross Validation}\label{cross_val}
+\begin{algorithmic}[]
+\Procedure{CrossVal}{$\mathcal{D}$, \textbf{W}, numEpochs, N}\\
+
+\State \textbf{randomize}$(\mathcal{D})$
+\State \textbf{partition} $\mathcal{D}=\mathcal{D}_1\cup\mathcal{D}_2\cup\dots\cup\mathcal{D}_N$
+\State \textbf{for } $i=1,2,\dots,N$
+\State \hspace{.25cm} $\textbf{W}\gets \text{Train}(\mathcal{D\backslash\mathcal{D}_i}, \textbf{W}, numEpochs)$
+\State \textbf{return W}\\
+
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
 \section{Data}
 
