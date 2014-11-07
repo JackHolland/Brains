@@ -150,6 +150,27 @@ Take a datum $(\vc x^{(0)},\vc y)$ and process the input to get an output $(\vc 
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Train Network}\label{train_ANN}
+\begin{algorithmic}[]
+\Procedure{Train}{$\mathcal{D}$, \textbf{W}, numEpochs}\\
+
+\State \textbf{for} $i = 1, 2, \dots,$ numEpochs
+\State \hspace{.25cm} $\textbf{randomize}(\mathcal{D})$ 
+\State \hspace{.25cm} $\textbf{for } d\in\mathcal{D}$
+\State \hspace{.50cm} $\textbf{X} \gets \text{FeedForward}(d_1,\textbf{W})$
+\State \hspace{.50cm} $\textbf{W} \gets \text{BackProp}(\textbf{X}, d_2,\textbf{W})$
+\State \hspace{.25cm} \textbf{end}
+\State \textbf{end}\\
+
+\State \textbf{return W}\\
+
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
 \section{Data}
 
 \section{Experiment}
