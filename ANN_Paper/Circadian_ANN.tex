@@ -176,10 +176,13 @@ Take a datum $(\vc x^{(0)},\vc y)$ and process the input to get an output $(\vc 
 \Procedure{CrossVal}{$\mathcal{D}$, \textbf{W}, numEpochs, N}\\
 
 \State \textbf{randomize}$(\mathcal{D})$
-\State \textbf{partition} $\mathcal{D}=\mathcal{D}_1\cup\mathcal{D}_2\cup\dots\cup\mathcal{D}_N$
+\State \textbf{partition} $\mathcal{D}=\mathcal{D}^1\sqcup\mathcal{D}^2\sqcup\dots\sqcup\mathcal{D}^N$
 \State \textbf{for } $i=1,2,\dots,N$
-\State \hspace{.25cm} $\textbf{W}\gets \text{Train}(\mathcal{D\backslash\mathcal{D}_i}, \textbf{W}, numEpochs)$
-\State \textbf{return W}\\
+\State \hspace{.25cm} $\textbf{W}\gets \text{Train}(\mathcal{D\backslash \mathcal{D}}^i, \textbf{W}, \text{numEpochs})$
+\State \hspace{.25cm} MSE$_i\gets\|\mathcal{D}^i_2-\text{FeedForward}(\mathcal{D}^i_1,\textbf{W})\|_2$
+\State \textbf{end}
+\State CVerror $\gets \text{mean}(\{MSE_i\})$\\
+\State \textbf{return} CVerror\\
 
 \EndProcedure
 \end{algorithmic}
