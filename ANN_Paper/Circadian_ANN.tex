@@ -122,8 +122,38 @@ With the architecture in place, we can now easily state the feed forward algorit
 
 This is all fine and dandy, but what we want is to be able to train the network based on the known labels. We need to compare the output of the network with the known label, define an error based on that comparison, and then alter the weights in the network so as to decrease that error. Furthermore, when the weights are changed, we do not want them to take on any values (one can imagine one weight becoming so high that it dominates the flow of signals in the ANN), so we must also regularize the way in which the error function is causing the weights to change. These statements can be made more precise.
 
-Take a datum $(\vc x^{(0)},\vc y)$ and process the input to get an output $(\vc x^{(L)},\vc y)$. 
+Initialize an ANN with randomized weights. Take a datum $(\vc x^{(0)},\vc y)$ and have the ANN process the input to get an output $(\vc x^{(L)},\vc y)$. We define the cost of the function as an explicit function of the output, the \textbf{error}, and an explicit function of the weights, the \textbf{regularizer}:
+\ee{\label{CostFactorization}
+C(\vc x^{(L)},\vc y,\textbf{W})=E(\vc x^{(L)},\vc y)+R(\textbf{W})
+}
+This factorization of the arguments is a bit deceptive, since the output is an implicit function of the weights of the network. This fact will be crucial as we start exploring weight-space and will need to take gradients of the cost with respect to the weights. Our goal will be to decrease the cost of our ANN at each iteration by changing the weights of the network. Over the course of many epochs, the network will learn the patterns in the data, and we will have minimized the cost. So, how do we choose the change in weights to achieve this at each iteration?
 
+We want:
+\ee{
+C(\vc x^{(L)},\vc y,\textbf{W}+\delta\textbf{W})\le C(\vc x^{(L)},\vc y,\textbf{W})\nn[1]
+}
+Expanding the RHS to first order in $\delta\textbf{W}$ we have:
+\ee{
+\nabla C\cdot \delta\textbf{W}\le0\nn[1]
+}
+where the gradient is taken with respect to the weights. We can easilly satisfy this equation if we choose:
+\ee{
+\label{LearningRule}
+\delta\textbf{W}&=-\eta \nabla C\nn
+\Downarrow&\nn
+\delta w^{(l)}_{ij}&=-\eta\frac{dC}{d w^{(l)}_{ij}}
+}
+This is our \textbf{learning rule}. The hyperparameter $\eta$ is called the \textbf{learning rate}. Taking the gradient of the regularizer is simple, since it is an explicit function of the weights. To take the gradient of the error, however, we will have to employ some mathematical trickery. We have to use the fact that the output depends on the weights, making the error an implicit function of the weights. 
+
+First off we will break up the reweighing of the ANN layer by layer. So we will start at the output layer, and move backward. To proceed we need one result on how to differentiate an output neuron with respect to weight:
+\ee{
+\frac{d x^{(l)}_n}{d w^{(l)}_{ij}}=&\frac{d}{d w^{(l)}_{ij}} \theta(\sum_{k=0}^{N_{l-1}}w^{(l)}_{nk}x^{(l-1)}_k)\nn
+=&\theta'\circ\theta^{-1}(x^{(l)}_n)\delta_{ni}x^{(l-1)}_j
+}
+The gradient of the error can then be written:
+\ee{
+\frac{d E}{d w^{(L)}_{ij}}=&\sum_{k=0}^{N_L}
+}
 
 \begin{algorithm}[H]
 \caption{Back Propogation}\label{back_prop}
