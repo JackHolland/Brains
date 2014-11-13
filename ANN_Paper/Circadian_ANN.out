@@ -1,6 +1,9 @@
 \BOOKMARK [1][-]{section*.1}{Introduction}{}% 1
 \BOOKMARK [1][-]{section*.2}{Artificial Neural Networks}{}% 2
-\BOOKMARK [1][-]{section*.3}{Data}{}% 3
-\BOOKMARK [1][-]{section*.4}{Experiment}{}% 4
-\BOOKMARK [1][-]{section*.5}{Conclusion}{}% 5
-\BOOKMARK [1][-]{section*.6}{References}{}% 6
+\BOOKMARK [2][-]{section*.3}{Function Choices}{section*.2}% 3
+\BOOKMARK [3][-]{section*.4}{Activation Function}{section*.3}% 4
+\BOOKMARK [2][-]{section*.5}{Algorithms}{section*.2}% 5
+\BOOKMARK [1][-]{section*.6}{Data}{}% 6
+\BOOKMARK [1][-]{section*.7}{Experiment}{}% 7
+\BOOKMARK [1][-]{section*.8}{Conclusion}{}% 8
+\BOOKMARK [1][-]{section*.9}{References}{}% 9

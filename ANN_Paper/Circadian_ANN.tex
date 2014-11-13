@@ -98,27 +98,7 @@ x^{(l)}_i=\theta(\sum_{j=0}^{N_{l-1}}w^{(l)}_{ij}x^{(l-1)}_j)
 }
 where once again,, the $w^{(l)}_{i0}$'s represent biases. 
 
-With the architecture in place, we can now easily state the feed forward algorithm. It is nothing more than allowing an input signal propagate through the network, and eventually pop out at the end.
-
-\begin{algorithm}[H]
-\caption{Feed Forward}\label{feed_forward}
-\begin{algorithmic}[]
-\Procedure{FeedForward}{$\vc x^{(0)}$,\textbf{W}}\\
-\State $L \gets \text{number of layers in }\textbf{W}$
-\State $N_l \gets \text{number of perceptrons in } \textbf{w}^{(l)}\in\textbf{W}$
-\State $N_0 \gets \text{dim(domain(}(\vc x^{(0)})$\\
-
-\State \textbf{for} $l=1,2,\dots,L$
-\State \hspace{.25cm}$x^{(l-1)}_0 \gets 1$
-\State \hspace{.25cm}\textbf{for} $i=1,2,\dots,N_l$
-\State \hspace{.25cm}\hspace{.25cm}$x^{(l)}_i\gets\theta(\sum_{j=0}^{N_{l-1}}w^{(l)}_{ij}x^{(l-1)}_j)$\Comment{ and store}
-\State \hspace{.25cm}\textbf{end}
-\State \textbf{end}\\
-
-\State \textbf{return} \textbf{X}$=(\vc x^{(0)},\vc x^{(1)},\dots,\vc x^{(L)})$\\
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
+With the architecture in place, we can now easily state the feed forward algorithm, \ref{feed_forward}. It is nothing more than allowing an input signal propagate through the network, and eventually pop out at the end.
 
 This is all fine and dandy, but what we want is to be able to train the network based on the known labels. We need to compare the output of the network with the known label, define an error based on that comparison, and then alter the weights in the network so as to decrease that error. Furthermore, when the weights are changed, we do not want them to take on any values (one can imagine one weight becoming so high that it dominates the flow of signals in the ANN), so we must also regularize the way in which the error function is causing the weights to change. These statements can be made more precise.
 
@@ -150,10 +130,56 @@ First off we will break up the reweighing of the ANN layer by layer. So we will 
 \frac{d x^{(l)}_n}{d w^{(l)}_{ij}}=&\frac{d}{d w^{(l)}_{ij}} \theta(\sum_{k=0}^{N_{l-1}}w^{(l)}_{nk}x^{(l-1)}_k)\nn
 =&\theta'\circ\theta^{-1}(x^{(l)}_n)\delta_{ni}x^{(l-1)}_j
 }
-The gradient of the error can then be written:
+if we define $\phi=\theta'\circ\theta^{-1}$, the gradient of the error can then be written:
 \ee{
-\frac{d E}{d w^{(L)}_{ij}}=&\sum_{k=0}^{N_L}
+\frac{d E}{d w^{(L)}_{ij}}=&\sum_{k=1}^{N_L}\frac{\dv E}{\dv x_k^{(L)}}\frac{d x^{(l)}_k}{d w^{(l)}_{ij}}\nn
+=&\frac{\dv E}{\dv x_i^{(L)}}\phi(x_i^{(L)})x_j^{(L-1)}
 }
+We can generalize this for the gradient w.r.t. other layer weights by defining:
+\ee{
+\delta_i^{(l)}=\left\{
+\begin{array}{lr}
+       \phi(x_i^{(l)})\frac{\dv E}{\dv x_i^{(l)}} & l=L\\
+       \phi(x_i^{(l)})\sum_j\delta^{(l+1)}_jw^{(l+1)}_{ji} & l<L
+\end{array}
+\right.
+}
+This is known as the $\delta$-rule, and is used to write the learning rate in its compact form:
+\ee{
+\delta w^{(l)}_{ij}=-\eta\left(\frac{dR}{d w^{(l)}_{ij}}+\delta^{(l)}_ix^{(l-1)}_j\right)
+}
+This is all we need to define the back propogation algorithm, \ref{back_prop}.
+
+
+To go any farther we need to discuss the possible choices for the functions that define our network: the activation, error, and regularizer. We will now discuss each of these in turn. 
+
+\subsection{Function Choices}
+\subsubsection{Activation Function}
+The only constraints that we have on our choice is that the function be both differentiable and invertible. Typical choices are therefore any smooth strictly monotonic function such as the sigmoid, arctan, or hyperbolic tangent. 
+\begin{itemize}
+
+\end{itemize}
+\subsection{Algorithms}
+
+\begin{algorithm}[H]
+\caption{Feed Forward}\label{feed_forward}
+\begin{algorithmic}[]
+\Procedure{FeedForward}{$\vc x^{(0)}$,\textbf{W}}\\
+\State $L \gets \text{number of layers in }\textbf{W}$
+\State $N_l \gets \text{number of perceptrons in } \textbf{w}^{(l)}\in\textbf{W}$
+\State $N_0 \gets \text{dim(domain(}(\vc x^{(0)})$\\
+
+\State \textbf{for} $l=1,2,\dots,L$
+\State \hspace{.25cm}$x^{(l-1)}_0 \gets 1$
+\State \hspace{.25cm}\textbf{for} $i=1,2,\dots,N_l$
+\State \hspace{.25cm}\hspace{.25cm}$x^{(l)}_i\gets\theta(\sum_{j=0}^{N_{l-1}}w^{(l)}_{ij}x^{(l-1)}_j)$\Comment{ and store}
+\State \hspace{.25cm}\textbf{end}
+\State \textbf{end}\\
+
+\State \textbf{return} \textbf{X}$=(\vc x^{(0)},\vc x^{(1)},\dots,\vc x^{(L)})$\\
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 
 \begin{algorithm}[H]
 \caption{Back Propogation}\label{back_prop}
@@ -174,7 +200,6 @@ The gradient of the error can then be written:
 \State \hspace{.50cm}\textbf{end}
 \State \hspace{.25cm}\textbf{end}
 \State \textbf{end}\\
-
 
 \State \textbf{return} \textbf{W}\\
 \EndProcedure
