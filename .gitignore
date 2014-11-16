@@ -1,3 +1,7 @@
+#bibtex
+.blg
+.fdb_latexmk
+
 # gedit cache files
 *~
 
