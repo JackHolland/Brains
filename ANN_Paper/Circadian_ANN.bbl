@@ -1,0 +1,46 @@
+\begin{thebibliography}{1}
+
+\bibitem{Dunlap99}
+Dunlap JC.
+\newblock Molecular bases for circadian clocks.
+\newblock {\em Cell}, 96(2):271--290, 1999.
+
+\bibitem{Bass10}
+Bass J and Takahashi JS.
+\newblock Circadian integration of metabolism and energetics.
+\newblock {\em Science}, 330(6009):1349--1354, 2010.
+
+\bibitem{Zhang14}
+Zhang R, Lahens NF, Ballance HI, Hughes ME, and Hogenesch JB.
+\newblock A circadian gene expression atlas in mammals: Implications for
+  biology and medicine.
+\newblock {\em PNAS}, 111(45):16219--16224, 2014.
+
+\bibitem{Mehra09}
+Mehra A, Baker CL, Loros JJ, and Dunlap JC.
+\newblock Post-translational modifications in circadian rhythms.
+\newblock {\em Trends in Biochemical Sciences}, 34(10):483--490, 2009.
+
+\bibitem{Menet14}
+Menet JS, Pescatore S, and Rosbash M.
+\newblock Clock:bmal1 is a pioneer-like transcription factor.
+\newblock {\em Genes & Development}, 28(1):8--13, 2014.
+
+\bibitem{Hughes10}
+Hughes ME, Hogenesch JB, and Kornacker K.
+\newblock {JTK\_CYCLE}: An efficient nonparametric algorithm for detecting
+  rhythmic components in genome-scale data sets.
+\newblock {\em Journal of Biological Rhythms}, 25(5):372--380, 2010.
+
+\bibitem{Straume04}
+Straume M.
+\newblock Dna microarray time series analysis: automated statistical assessment
+  of circadian rhythms in gene expression patterning.
+\newblock {\em Meth Enzymol}.
+
+\bibitem{Levine02}
+Levine JD, Funes P, Dowse HB, and Hall JC.
+\newblock Signal analysis of behavioral and molecular cycles.
+\newblock {\em BMC Neuroscience}.
+
+\end{thebibliography}
