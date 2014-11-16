@@ -1,0 +1,10 @@
+{
+	"micro_dim":	2,
+	"num_hidden":	3,
+	"inc_bias":	1,
+	"momentum":	0.1,
+	"weight_decay":	0.01,
+	"max_iterations":	1000,
+	"num_epochs":	5,
+	"snapshot":	10
+}
