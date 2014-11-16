@@ -14,6 +14,7 @@
 \usepackage{multirow}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{subfig}
 
 %editing commands for the users in our group (You can make more)
 \newcommand{\Damian}[1]{\textcolor{magenta}{(Damian: #1)}}
@@ -250,12 +251,23 @@ The only constraints that we have on our choice is that the function be both dif
 
 \section{Data}
 The training dataset employed in this project was derived from Neurospora Crassa a filamentous fungus which is one of the primary model organisms in the study of circadian clocks due to it's genetic tractability, ease of culture and possession of a semantically similar clock to higher eukaryotes.  All samples were synchronized with a light to dark transition and three biological replicates were collected every two hours for 48 hours.  These samples were then sequenced and aligned to the neurospora genome using tophat.  Feature counting was performed with HTSeq count and normalization performed with the DESeq bioconductor package.  The resulting gene counts were then processed using JTK for Circadian classification.  The training data is comprised of a combination of the normalized gene counts at each timepoint and a classifier of circadian, non-circadian or unclassified based on the adjusted P value output by JTK. The cutoffs for these classifiers were determined by examining the P and Q value distributions for all genes along with hierarchically clustered heatmaps for each set.
-
+\begin{figure*}
+\centering
+\vfill
+\includegraphics[width=0.48\textwidth]{Circadian.png}\hfill
+\includegraphics[width=0.48\textwidth]{Non-Circadian.png} 
+\\
+\includegraphics[width=0.48\textwidth]{Unclassified.png} \hfill
+\includegraphics[width=0.48\textwidth]{PvsQ.png} 
+\caption{lalallalalal}
+\vfill
+\end{figure*}
 \section{Experiment}
 
 \section{Conclusion}
 
-\bibliography{bibliography}{}
 \bibliographystyle{unsrt}
+\bibliography{bibliography}
+
 
 \end{document}
