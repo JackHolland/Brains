@@ -6,6 +6,7 @@ from pybrain.datasets	import ClassificationDataSet
 from pybrain.utilities           import percentError
 from pybrain.tools.shortcuts     import buildNetwork
 from pybrain.supervised.trainers import BackpropTrainer
+from pybrain.structure.modules   import LSTMLayer
 from pybrain.structure.modules   import SoftmaxLayer
 from pybrain.tools.customxml import NetworkWriter
 from pybrain.tools.customxml import NetworkReader
@@ -121,7 +122,7 @@ def train(filename):
 	val._convertToOneOfMany()
 
 	#build network
-	ann = buildNetwork(tr.indim, num_hidden, tr.outdim, outclass=SoftmaxLayer, bias=inc_bias)
+	ann = buildNetwork(tr.indim, num_hidden, tr.outdim, hiddenclass=LSTMLayer, recurrent=True, outclass=SoftmaxLayer, bias=inc_bias)
 
 	#training 
 	trainer = BackpropTrainer(ann,	dataset=tr, momentum=momentum, verbose=True, weightdecay=weight_decay)

@@ -1,5 +1,5 @@
 {
-	"micro_dim":	2,
+	"micro_dim":	24,
 	"num_hidden":	3,
 	"inc_bias":	1,
 	"momentum":	0.1,
