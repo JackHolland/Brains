@@ -19,7 +19,8 @@ import sys
 import json
 
 #Default parameters
-micro_dim = 2 #the number of input nodes
+micro_dim = 24 #the number of input nodes
+num_classes = 3
 num_hidden = 3 #number of hidden layers
 inc_bias = False #to include bias or not
 
@@ -60,22 +61,17 @@ def load_params():
 
 def extract_data(filename, ds):
 	with open(filename, 'r') as f:
-		num = 0
-		for line in f:
-			#skip first line
-			if num == 0:
-				num = num + 1
-				continue
-			line = line.split(',')
-			label = int(line[1])
-			microarray = [float(i) for i in line[3:]]
+		lines = f.read().splitlines(True)[1:]
+		for line in lines:
+			cells = line.split(',')
+			label = int(cells[1])
+			microarray = [float(i) for i in cells[3:]]
 			ds.addSample(microarray, (label))
-			num = num + 1
 
 def restart(filename, netfile):
 	load_params()
 	#import dataset
-	ds = ClassificationDataSet(micro_dim, 1, nb_classes=2)
+	ds = ClassificationDataSet(micro_dim, 1, nb_classes=num_classes)
 	extract_data(filename, ds)
 
 	tr, val = ds.splitWithProportion(0.10) #10% validation data
@@ -94,9 +90,7 @@ def restart(filename, netfile):
 	while(not done):
 		trainer.trainEpochs(num_epochs)
 		error = percentError(trainer.testOnClassData(), tr['class'])
-		print "iter %d" % iteration
-		#print "Error = %f" % float(error)
-		print error
+		print "iter %d, error=%d" % (iteration, error)
 		if iteration >= max_iterations:
 			done = True
 		#pickle every 5 iterations
