@@ -84,7 +84,7 @@ Science is done!
 \section{Circadian Rhythms}
 Circadian Clocks are an adaptive response to the evolutionary necessity of anticipating day night cycles.  They occur widely in higher eukaryotes and sparsely in fungi and cyanobacteria.  Because of the widespread and longstanding evolutionary history of organisms specializing their activity to a specific phase of the day night cycle, circadian clocks, where present, have been found to regulate almost every biological process imaginable.  Notable among these are the cell cycle, DNA damage repair and metabolism, processes central to the majority of human disease \cite{Dunlap99}.  Perturbation of the clock upsets these processes as well and has been shown to contribute to disease \cite{Bass10}.  One of the most important recent trends in circadian research has been the interaction of the circadian cycle with disease treatment, specifically the timed delivery of medicine \cite{Zhang14}.  Additionally the circadian clock's modulation of such a wide variety of gene and protein expression along with the diverse processes employed to achieve that modulation provides an excellent opportunity for the study of gene regulation at every stage from transcription to degradation \cite{Mehra09,Menet14}.
 
-The current state of the art in the identification of Circadian gene expression is the JTK\_CYCLE algorithm (JTK) \cite{Hughes10}.  JTK uses a nonparametric test for monotonic orderings in the data over all possible period lengths and phases and for high (\~2hr) resolution data it provides high sensitivity, specifity and computational efficiency.  JTK and earlier approaches including curve fitting \cite{Straume04}, autocorrelation \cite{Levine02}, Fourier analysis \cite{Wichert04,Whitfield04} and Fisher's G Test \cite{Wichert04} all fall short however as the resolution of data decreases.  Due to technical challenges in the maintenance and synchronization of cells as well as sequencing costs, dataset resolution is currently a major limiting factor in the identification of circadian genes.  Therefore an improved computational technique for identifying circadian genes in low temporal resolution data could rapidly provide knew knowledge from publicly available pre-existing datasets
+The current state of the art in the identification of Circadian gene expression is the JTK\_CYCLE algorithm (JTK) \cite{Hughes10}.  JTK uses a nonparametric test for monotonic orderings in the data over all possible period lengths and phases and for high (~2hr) resolution data it provides high sensitivity, specifity and computational efficiency.  JTK and earlier approaches including curve fitting \cite{Straume04}, autocorrelation \cite{Levine02}, Fourier analysis \cite{Wichert04,Whitfield04} and Fisher's G Test \cite{Wichert04} all fall short however as the resolution of data decreases.  Due to technical challenges in the maintenance and synchronization of cells as well as sequencing costs, dataset resolution is currently a major limiting factor in the identification of circadian genes.  Therefore an improved computational technique for identifying circadian genes in low temporal resolution data could rapidly provide knew knowledge from publicly available pre-existing datasets
 
 \section{Artificial Neural Networks}
 In this section we go over the theoretical background of how to build an ANN, develop the formalism behind the backpropogation algorithm, and discuss possible candidates for tunable hyperparameters/functions used. We will develop both the feed forward and back prop algorithms for completeness. 
@@ -161,11 +161,38 @@ To go any farther we need to discuss the possible choices for the functions that
 
 \subsection{Function Choices}
 \subsubsection{Activation Function}
-The only constraints that we have on our choice is that the function be both differentiable and invertible. Typical choices are therefore any smooth strictly monotonic function such as the sigmoid, arctan, or hyperbolic tangent. 
+The only constraints that we have on our choice is that the function be both differentiable and invertible. Typical choices are therefore any smooth strictly monotonic function. We should also specify the domain of the inputs. The list below has been normalized to the range $(0,1)$, and we have included the backprop functions for completeness:
 \begin{itemize}
-
+\item Sigmoid (blue)
+\ee{
+\theta(x)=&\frac{1}{1+e^{-x}}\\
+\phi(x) =& x(1-x)\nn[1]
+}
+\item Hyperbolic Tangent (magenta)
+\ee{
+\theta(x) =& \frac{1}{2}(1+\text{tanh} x)\\
+\phi(x) =& 2x(1-x)\nn[1]
+}
+\item Arctangent (gold)
+\ee{
+\theta(x) =& \frac{1}{2}(1+\frac{2}{\pi}\text{arctan} x)\\
+\phi(x) =& \frac{1}{\pi}\cos^2\frac{\pi}{2}(2x-1)\nn[1]
+}
 \end{itemize}
+
+The activations are plotted in figure \ref{AF}. The qualitative differences are mostly with the arctan function, which requires incredibly high absolute value inputs to generate output close to $0$ or $1$. The corresponding backprop functions are plotted in figure.
+
+\begin{figure*}[ht!]
+\label{AF}
+\centering
+\includegraphics[width=0.48\textwidth]{ActivationFunctions.png}\hfill
+\includegraphics[width=0.48\textwidth]{BackPropActivationFunctions.png}
+\caption{On the left we have the activation functions plotted, and the back propagated functions on the right. The sigmoid, hyperbolic tangent, and arctangent are blue, magenta, and gold, respectively. Not that the main difference }
+\end{figure*}
+
+
 \subsection{Algorithms}
+
 
 \begin{algorithm}[H]
 \caption{Feed Forward}\label{feed_forward}
@@ -254,6 +281,7 @@ The training dataset employed in this project was derived from Neurospora Crassa
 \begin{figure*}
 \centering
 \vfill
+\label{data_types}
 \includegraphics[width=0.48\textwidth]{Circadian.png}\hfill
 \includegraphics[width=0.48\textwidth]{Non-Circadian.png} 
 \\
