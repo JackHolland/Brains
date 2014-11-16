@@ -25,12 +25,12 @@ num_hidden = 3 #number of hidden layers
 inc_bias = False #to include bias or not
 
 momentum = 0.1 #momentum 
-weight_decay = 0.01 #weight decay
+weight_decay = 0.005 #weight decay
 
 myError = 10.0
 
 
-max_iterations = 450000 #maximum number of iterations
+max_iterations = 1000000 #maximum number of iterations
 num_epochs = 5 #number of ephochs at every iteration
 snapshot = 1000 #when to snapshot the ANN
 
@@ -107,7 +107,7 @@ def restart(filename, netfile):
 def train(filename):
 	load_params()
 	#import dataset
-	ds = ClassificationDataSet(micro_dim, 1, nb_classes=2)
+	ds = ClassificationDataSet(micro_dim, 1, nb_classes=num_classes)
 	extract_data(filename, ds)
 
 	tr, val = ds.splitWithProportion(0.10) #10% validation data
@@ -116,33 +116,30 @@ def train(filename):
 	val._convertToOneOfMany()
 
 	#build network
-	ann = buildNetwork(tr.indim, num_hidden, tr.outdim, hiddenclass=LSTMLayer, recurrent=True, outclass=SoftmaxLayer, bias=inc_bias)
+	ann = buildNetwork(tr.indim, num_hidden, tr.outdim, hiddenclass=LSTMLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
 
 	#training 
-	trainer = BackpropTrainer(ann,	dataset=tr, momentum=momentum, verbose=True, weightdecay=weight_decay)
+	trainer = BackpropTrainer(ann,	dataset=tr, momentum=momentum, weightdecay=weight_decay, verbose=True)
 	done = False
 	iteration = 0
-
 
 	while(not done):
 		trainer.trainEpochs(num_epochs)
 		error = percentError(trainer.testOnClassData(), tr['class'])
-		print "iter %d" % iteration
-		#print "Error = %f" % float(error)
+		print "iter %d, error=%d" % (iteration, error)
 
 		if iteration >= max_iterations:
 			done = True
 		#pickle every 5 iterations
-		if iteration%snapshot == 0:
-			print "Saving model %d_%d.xml..."%(iteration, int(error))
-			NetworkWriter.writeToFile(ann, "%d_%d.xml"%(iteration, int(error)))
-			print error
+		#if iteration%snapshot == 0:
+			#print "Saving model %d_%d.xml..."%(iteration, int(error))
+			#NetworkWriter.writeToFile(ann, "%d_%d.xml"%(iteration, int(error)))
+			#print error
 
 		iteration = iteration + 1
 
 	#testing
-	tstresult = percentError(trainer.testOnClassData(dataset=val), val['class'])
-	print tstresult
+	print percentError(trainer.testOnClassData(dataset=val), val['class'])
 
 if __name__ == '__main__':
 	operation = sys.argv[1]
@@ -150,17 +147,4 @@ if __name__ == '__main__':
 		train(sys.argv[2])
 	else:
 		restart(sys.argv[2], sys.argv[3])
-
-
-
-
-
-
-
-
-
-
-
-
-
 
