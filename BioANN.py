@@ -19,6 +19,8 @@ import sys
 import json
 from scipy import array, where, argmax
 
+import matplotlib.pyplot as plt
+
 #Default parameters
 micro_dim = 24 #the number of input nodes
 num_classes = 3
@@ -123,10 +125,13 @@ def train(filename):
 	trainer = BackpropTrainer(ann,	dataset=tr, momentum=momentum, weightdecay=weight_decay, verbose=True)
 	done = False
 	iteration = 0
+	errors, confidences = [], []
 
 	while(not done):
 		trainer.trainEpochs(num_epochs)
-		print "iter %d, error %f, confidence %f" % (iteration, calcError(trainer), calcConfidence(trainer))
+		errors.append(calcError(trainer))
+		confidences.append(calcConfidence(trainer))
+		print "iter %d, error %f, confidence %f" % (iteration, errors[-1], confidences[-1])
 
 		if iteration >= max_iterations - 1:
 			done = True
@@ -140,6 +145,11 @@ def train(filename):
 
 	#testing
 	print 'error %f, confidence %f' % (calcError(trainer, dataset=val), calcConfidence(trainer, dataset=val))
+	
+	#plotting
+	plt.plot(range(max_iterations), errors)
+	plt.plot(range(max_iterations), confidences)
+	plt.save('error.png')
 
 def calcError(trainer, dataset=None):
     if dataset == None:
