@@ -14,8 +14,7 @@
 \usepackage{multirow}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-\usepackage{caption}
-\usepackage{subcaption}
+
 
 
 %editing commands for the users in our group (You can make more)
@@ -280,28 +279,21 @@ The activations are plotted in figure \ref{AF}. The qualitative differences are 
 
 \section{Data}
 The training dataset employed in this project was derived from Neurospora Crassa a filamentous fungus which is one of the primary model organisms in the study of circadian clocks due to it's genetic tractability, ease of culture and possession of a semantically similar clock to higher eukaryotes.  All samples were synchronized with a light to dark transition and three biological replicates were collected every two hours for 48 hours.  These samples were then sequenced and aligned to the neurospora genome using tophat.  Feature counting was performed with HTSeq count and normalization performed with the DESeq bioconductor package.  The resulting gene counts were then processed using JTK for Circadian classification.  The training data is comprised of a combination of the normalized gene counts at each timepoint and a classifier of circadian, non-circadian or unclassified based on the adjusted P value output by JTK. The cutoffs for these classifiers were determined by examining the P and Q value distributions for all genes along with hierarchically clustered heatmaps for each set.
-\begin{figure*}[t]
-\vfill
-\begin{subfigure}[t]{0.3\textwidth}\hfill
-    \includegraphics[width=\textwidth]{Circadian.png}
-    \label{fig:Circadian}
-\end{subfigure}
-\begin{subfigure}[t]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{Non-Circadian.png}
-    \label{fig:Non-Circadian}
-\end{subfigure}
-\\ 
-\begin{subfigure}[t]{0.3\textwidth}\hfill
-    \includegraphics[width=\textwidth]{Unclassified.png}
-    \label{fig:Unclassified}
-\end{subfigure}
-\begin{subfigure}[t]{0.3\textwidth}
-    \includegraphics[width=\textwidth]{PvsQ.png}
-    \label{fig:PvsQ}
-    \end{subfigure} 
-\caption{lalalala}
-\vfill
-\end{figure*}
+
+
+\begin{figure}[!ht]
+  \centering
+  \subfloat{\includegraphics[width=.2\textwidth]{Circadian.png}}\quad
+  \subfloat{\includegraphics[width=.2\textwidth]{Non-Circadian.png}}\\
+  \subfloat{\includegraphics[width=.2\textwidth]{Unclassified.png}}\quad
+  \subfloat{\includegraphics[width=.2\textwidth]{PvsQ.png}}
+  \caption{Hierarchically clustered heatmaps of each class along with a plot of P vs Q for all genes}
+  \label{fig:1}
+\end{figure}
+
+
+
+
 \section{Experiment}
 
 \section{Conclusion}
