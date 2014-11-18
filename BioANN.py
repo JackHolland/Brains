@@ -91,7 +91,6 @@ def train(filename, start=''):
 			exit(1)
 		else:
 			iteration = int(match.group(1)) + 1
-	print(iteration, type(iteration))
 	
 	#training 
 	trainer = BackpropTrainer(ann,	dataset=tr, momentum=momentum, weightdecay=weight_decay, verbose=True)
@@ -131,7 +130,7 @@ def train(filename, start=''):
 	ax2.set_ylabel('confidence (L1 error)')
 	for tick in ax2.get_yticklabels():
 		tick.set_color('r')
-	plt.savefig('error.png')
+	plt.savefig('error-wd0.1.png')
 
 def calcError(trainer, dataset=None):
     if dataset == None:
