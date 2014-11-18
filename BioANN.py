@@ -34,6 +34,8 @@ max_iterations = 1000000 #maximum number of iterations
 num_epochs = 5 #number of ephochs at every iteration
 snapshot = 10 #when to snapshot the ANN
 
+shapes = [(24, 12), (12, 3)]
+
 def load_params():
 	with open('params', 'r') as f_in:
 		params = json.load(f_in)
@@ -81,7 +83,7 @@ def train(filename, start=''):
 	
 	#build network
 	if start == '':
-		ann = buildNetwork(tr.indim, num_hidden[0], tr.outdim, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
+		ann = buildNetwork(tr.indim, 12, tr.outdim, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
 		iteration = 0
 	else:
 		ann = NetworkReader.readFrom(start)
@@ -99,6 +101,33 @@ def train(filename, start=''):
 	
 	while(not done):
 		trainer.trainEpochs(num_epochs)
+		
+		nodes = [[], [], []]
+		for c in ann.connections:
+			index = -1
+			if c._name == 'in':
+				index = 0
+			elif c._name == 'hidden0':
+				index = 1
+			elif c._name == 'out':
+				index = 2
+			if index >= 0:
+				nodes[index] = c.inputbuffer
+		
+		matrices = [[], []]
+		for mod in ann.modules:
+			for conn in ann.connections[mod]:
+				if mod.name == 'in' and conn.outmod.name == 'hidden0':
+					matrices[0] = array(conn.params).reshape(shapes[0])
+				elif mod.name == 'hidden0' and conn.outmod.name == 'out':
+					matrices[1] = array(conn.params).reshape(shapes[1])
+		
+		f, axs = plt.subplots(1, len(matrices), sharey=True)
+		for i in range(len(matrices)):
+			axs[i].imshow(matrices[i], interpolation='none', shape=(24, 12))
+		f.savefig('matrices-%d.png' % iteration)
+		exit()
+		
 		errors.append(calcError(trainer))
 		confidences.append(calcConfidence(trainer))
 		print 'iter %d, error %f, confidence %f' % (iteration, errors[-1], confidences[-1])
@@ -130,7 +159,7 @@ def train(filename, start=''):
 	ax2.set_ylabel('confidence (L1 error)')
 	for tick in ax2.get_yticklabels():
 		tick.set_color('r')
-	plt.savefig('error-3layer.png')
+	plt.savefig('error-5layer-24.png')
 
 def calcError(trainer, dataset=None):
     if dataset == None:
