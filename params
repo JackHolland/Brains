@@ -3,7 +3,7 @@
 	"num_hidden":	[48,12],
 	"inc_bias":	1,
 	"momentum":	0.1,
-	"weight_decay":	0.1,
+	"weight_decay":	0.0001,
 	"max_iterations":	100,
 	"num_epochs":	5,
 	"snapshot":	10

@@ -81,7 +81,7 @@ def train(filename, start=''):
 	
 	#build network
 	if start == '':
-		ann = buildNetwork(tr.indim, num_hidden[0], num_hidden[1], tr.outdim, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
+		ann = buildNetwork(tr.indim, num_hidden[0], tr.outdim, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
 		iteration = 0
 	else:
 		ann = NetworkReader.readFrom(start)
@@ -106,7 +106,7 @@ def train(filename, start=''):
 		if iteration >= max_iterations - 1:
 			done = True
 		
-		#pickle every 5 iterations
+		#save every <snapshot> iterations
 		if iteration % snapshot == 0:
 			file_data = (iteration, int(errors[-1]*100))
 			print 'Saving model %d_%d.xml...' % file_data
@@ -130,7 +130,7 @@ def train(filename, start=''):
 	ax2.set_ylabel('confidence (L1 error)')
 	for tick in ax2.get_yticklabels():
 		tick.set_color('r')
-	plt.savefig('error-wd0.1.png')
+	plt.savefig('error-3layer.png')
 
 def calcError(trainer, dataset=None):
     if dataset == None:
