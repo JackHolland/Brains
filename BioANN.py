@@ -17,6 +17,8 @@ import json
 from scipy import array, where, argmax
 import matplotlib.pyplot as plt
 import re
+from graph_tool.all import *
+from math import log10
 
 #Default parameters
 micro_dim = 24 #the number of input nodes
@@ -34,7 +36,7 @@ max_iterations = 1000000 #maximum number of iterations
 num_epochs = 5 #number of ephochs at every iteration
 snapshot = 10 #when to snapshot the ANN
 
-shapes = [(24, 12), (12, 3)]
+shapes = [(24, 48), (48, 3)]
 
 def load_params():
 	with open('params', 'r') as f_in:
@@ -83,7 +85,7 @@ def train(filename, start=''):
 	
 	#build network
 	if start == '':
-		ann = buildNetwork(tr.indim, 12, tr.outdim, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
+		ann = buildNetwork(tr.indim, 48, 3, 48, tr.outdim, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
 		iteration = 0
 	else:
 		ann = NetworkReader.readFrom(start)
@@ -97,12 +99,12 @@ def train(filename, start=''):
 	#training 
 	trainer = BackpropTrainer(ann,	dataset=tr, momentum=momentum, weightdecay=weight_decay, verbose=True)
 	done = False
-	errors, confidences = [], []
+	errors, variations = [], []
 	
 	while(not done):
 		trainer.trainEpochs(num_epochs)
 		
-		nodes = [[], [], []]
+		"""nodes = [[], [], []]
 		for c in ann.connections:
 			index = -1
 			if c._name == 'in':
@@ -112,25 +114,25 @@ def train(filename, start=''):
 			elif c._name == 'out':
 				index = 2
 			if index >= 0:
-				nodes[index] = c.inputbuffer
+				nodes[index] = c.inputbuffer.tolist()"""
 		
-		matrices = [[], []]
+		"""matrices = [[], []]
 		for mod in ann.modules:
 			for conn in ann.connections[mod]:
 				if mod.name == 'in' and conn.outmod.name == 'hidden0':
-					matrices[0] = array(conn.params).reshape(shapes[0])
+					matrices[0] = array(conn.params).reshape(shapes[0]).tolist()
 				elif mod.name == 'hidden0' and conn.outmod.name == 'out':
-					matrices[1] = array(conn.params).reshape(shapes[1])
+					matrices[1] = array(conn.params).reshape(shapes[1]).tolist()"""
 		
-		f, axs = plt.subplots(1, len(matrices), sharey=True)
+		"""f, axs = plt.subplots(1, len(matrices), sharey=True)
 		for i in range(len(matrices)):
 			axs[i].imshow(matrices[i], interpolation='none', shape=(24, 12))
-		f.savefig('matrices-%d.png' % iteration)
-		exit()
+		f.savefig('matrices-%d.png' % iteration)"""
+		#graph_visualizer(nodes, matrices, iteration)
 		
 		errors.append(calcError(trainer))
-		confidences.append(calcConfidence(trainer))
-		print 'iter %d, error %f, confidence %f' % (iteration, errors[-1], confidences[-1])
+		variations.append(calcVariation(trainer))
+		print 'iter %d, error %f, variation %f' % (iteration, errors[-1], variations[-1])
 
 		if iteration >= max_iterations - 1:
 			done = True
@@ -144,22 +146,57 @@ def train(filename, start=''):
 		iteration = iteration + 1
 	
 	#testing
-	print 'error %f, confidence %f' % (calcError(trainer, dataset=val), calcConfidence(trainer, dataset=val))
+	val_error, val_variation = calcError(trainer, dataset=val), calcVariation(trainer, dataset=val)
+	print 'error %f, variation %f' % (val_error, val_variation)
 	
 	#plotting
 	iterations = range(max_iterations)
 	fig, ax1 = plt.subplots()
-	ax1.plot(iterations, errors, 'b-')
+	ax1.plot(iterations, map(log10, errors), 'b-')
 	ax1.set_xlabel('iteration')
 	ax1.set_ylabel('mean squared error')
 	for tick in ax1.get_yticklabels():
 		tick.set_color('b')
+	ax1.set_title('error for validation dataset: %f, variation for validation dataset: %f' % (val_error, val_variation))
 	ax2 = ax1.twinx()
-	ax2.plot(iterations, confidences, 'r-')
-	ax2.set_ylabel('confidence (L1 error)')
+	ax2.plot(iterations, map(log10, variations), 'r-')
+	ax2.set_ylabel('variation (L1 error)')
 	for tick in ax2.get_yticklabels():
 		tick.set_color('r')
-	plt.savefig('error-5layer-24.png')
+	plt.savefig('error-5layer-48-3-48.png')
+
+def graph_visualizer(vertices, edges, iteration):
+	g = Graph(directed=False)
+	vpos = g.new_vertex_property("vector<float>")
+	vsize = g.new_vertex_property("float")
+	vcolor = g.new_vertex_property("vector<float>")
+	ecolor = g.new_edge_property("vector<float>")
+	ewidth = g.new_edge_property("float")
+
+	layers_vertices = []
+	for i in range(len(vertices)):
+		layer = vertices[i][0]
+		layer_vertices = []
+		offset = len(layer) / 2.0
+		for j in range(len(layer)):
+			vertex = g.add_vertex()
+			layer_vertices.append(vertex)
+			vpos[vertex] = [i * 10, j - offset]
+			vsize[vertex] = layer[j] * 3
+			vcolor[vertex] = [0, 105/255.0, 62/255.0, 1]
+		layers_vertices.append(layer_vertices)
+
+	for i in range(len(edges)):
+		matrix = edges[i]
+		for j in range(len(matrix)):
+			vector = matrix[j]
+			for k in range(len(vector)):
+				edge = g.add_edge(layers_vertices[i][j], layers_vertices[i+1][k])
+				shade = 1 - vector[k]
+				ecolor[edge] = [shade, shade, shade, 1]
+				ewidth[edge] = 2
+
+	graph_draw(g, vpos, vertex_size=vsize, vertex_fill_color=vcolor, edge_color=ecolor, edge_pen_width=ewidth, bg_color=[1,1,1,1], output_size=(800, 800), output='graph-%d.png' % iteration)
 
 def calcError(trainer, dataset=None):
     if dataset == None:
@@ -175,7 +212,7 @@ def calcError(trainer, dataset=None):
             targ.append(argmax(target))
     return percentError(out, targ) / 100
 
-def calcConfidence(trainer, dataset=None):
+def calcVariation(trainer, dataset=None):
     if dataset == None:
         dataset = trainer.ds
     dataset.reset()
