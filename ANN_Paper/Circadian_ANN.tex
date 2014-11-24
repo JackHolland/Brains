@@ -85,19 +85,19 @@ The circadian clock regulates many critical processes, notably including metabol
 \section{Circadian Rhythms}
 Circadian Clocks are an adaptive response to the evolutionary necessity of anticipating day night cycles.  They occur widely in higher eukaryotes and sparsely in fungi and cyanobacteria.  Because of the widespread and longstanding evolutionary history of organisms specializing their activity to a specific phase of the day night cycle, circadian clocks, where present, have been found to regulate almost every biological process imaginable.  Notable among these are the cell cycle, DNA damage repair and metabolism, processes central to the majority of human disease \cite{Dunlap99}.  Perturbation of the clock upsets these processes as well and has been shown to contribute to disease \cite{Bass10}.  One of the most important recent trends in circadian research has been the interaction of the circadian cycle with disease treatment, specifically the timed delivery of medicine \cite{Zhang14}.  Additionally the circadian clock's modulation of such a wide variety of gene and protein expression along with the diverse processes employed to achieve that modulation provides an excellent opportunity for the study of gene regulation at every stage from transcription to degradation \cite{Mehra09,Menet14}.
 
-The current state of the art in the identification of Circadian gene expression is the JTK\_CYCLE algorithm (JTK) \cite{Hughes10}.  JTK uses a nonparametric test for monotonic orderings in the data over all possible period lengths and phases and for high (\~2hr) resolution data it provides high sensitivity, specifity and computational efficiency.  JTK and earlier approaches including curve fitting \cite{Straume04}, autocorrelation \cite{Levine02}, Fourier analysis \cite{Wichert04,Whitfield04} and Fisher's G Test \cite{Wichert04} all fall short however as the resolution of data decreases.  Due to technical challenges in the maintenance and synchronization of cells as well as sequencing costs, dataset resolution is currently a major limiting factor in the identification of circadian genes.  Therefore an improved computational technique for identifying circadian genes in low temporal resolution data could rapidly provide knew knowledge from publicly available pre-existing datasets
+The current state of the art in the identification of Circadian gene expression is the $JTK_{CYCLE}$ algorithm (JTK) \cite{Hughes10}.  JTK uses a nonparametric test for monotonic orderings in the data over all possible period lengths and phases and for high (\~2hr) resolution data it provides high sensitivity, specificity and computational efficiency.  JTK and earlier approaches including curve fitting \cite{Straume04}, autocorrelation \cite{Levine02}, Fourier analysis \cite{Wichert04,Whitfield04} and Fisher's G Test \cite{Wichert04} all fall short however as the resolution of data decreases.  Due to technical challenges in the maintenance and synchronization of cells as well as sequencing costs, dataset resolution is currently a major limiting factor in the identification of circadian genes.  Therefore an improved computational technique for identifying circadian genes in low temporal resolution data could rapidly provide knew knowledge from publicly available pre-existing datasets
 
 \section{Artificial Neural Networks}
-In this section we go over the theoretical background of how to build an ANN, develop the formalism behind the backpropogation algorithm, and discuss possible candidates for tunable hyperparameters/functions used. We will develop both the feed forward and back prop algorithms for completeness. 
+In this section we go over the theoretical background of how to build an ANN, develop the formalism behind the backpropagation algorithm, and discuss possible candidates for tunable hyperparameters/functions used. We will develop both the feed forward and back prop algorithms for completeness. 
 
-ANNs are a supervised machine learning algorithm used for classification problems. Given some labeled set of data $\mathcal{D}=\{(\vc x,\vc y)_i\}_{i=1}^D$, where to each multidimensional datum $\vc x$ there is an associated multidimensional label $\vc y$, the ANN learns from $\mathcal{D}$ how to place labels on new data. Processing a datum by the network is accomplished via the \textit{feed forward} algorithm, while training is done through the \textit{back propogation} algorithm. 
+ANNs are a supervised machine learning algorithm used for classification problems. Given some labeled set of data $\mathcal{D}=\{(\vc x,\vc y)_i\}_{i=1}^D$, where to each multidimensional datum $\vc x$ there is an associated multidimensional label $\vc y$, the ANN learns from $\mathcal{D}$ how to place labels on new data. Processing a datum by the network is accomplished via the \textit{feed forward} algorithm, while training is done through the \textit{back propagation} algorithm. 
 
 The basic building block of an ANN is the perceptron. $N$ signals go into the perceptron, are weighted, summed, and then put through some activation function to create an output signal:
 \ee{
 \label{perceptron}
 \text{output}=\theta(\sum_{i=0}^{N}w_i\times\text{input}_i)
 }
-The form of the \textbf{activation function}, $\theta$ is typcally chosen to be one that gives a value of $1$ for arguments larger than some threshhold, and $0$ otherwise. The backpropogation algorithm requires this function to be both differentiable and invertible, so typical choices include the logistic, arctan, and hyperbolic tangent functions. Note also that the sum begins at $0$, leading to $N+1$ inputs. The $0^{th}$ input is always taken to be $1$, and its corresponding weight is known as the \textbf{bias}.
+The form of the \textbf{activation function}, $\theta$, is typcally chosen to be one that gives a value of $1$ for arguments larger than some threshhold, and $0$ otherwise. The backpropagation algorithm requires this function to be both differentiable and invertible, so typical choices include the logistic, arctan, and hyperbolic tangent functions. Note also that the sum begins at $0$, leading to $N+1$ inputs. The $0^{th}$ input is always taken to be $1$, and its corresponding weight is known as the \textbf{bias}.
 
 We can stack perceptrons into layers, and in turn stack those together so that the inputs of the $l^{th}$ layer are the outputs coming from the $(l-1)^{th}$ layer. This is the basic form of an ANN. We need only specify the architecture of the ANN (number of layers/\{Input dimensionality,number of perceptrons in each layer\}), which will be $L/\{N_0,N_1,\dots,N_L\}$. Note that $N_0$ represents the dimensionality of the input signal, and $N_L$ is the dimensionality of the output layer. Between each pair of layers there is a corresponsing weight matrix, $\textbf{w}^{(l)}:\mathbb{R}^{N_{l-1}}\rightarrow\mathbb{R}^{N_l}$, the components of which are $w_{ij}^{(l)}$, where $l$ is the target layer, $i$ is the index of the \textit{to} perceptron in the target layer, and $j$ is the \textit{from} perceptron in the domain layer. We denote the set of all these matrices \textbf{W}, and refer to this set as the \textbf{architecture} of our ANN. With these definitions in hand, we can write the output of the $i^{th}$ perceptron in the $l^{th}$ layer in compact form:
 \ee{
@@ -160,7 +160,7 @@ Take a datum $(\vc x^{(0)},\vc y)$ and process the input to get an output $d=(\v
 \ee{
 C=C((\prod_l\theta\circ \textbf{W}^{(l)})(\vc{x}^{(0)}),\vc{y},\textbf{W})
 }
-This is all we need to define the back propogation algorithm, \ref{back_prop}.
+This is all we need to define the back propagation algorithm, \ref{back_prop}.
 
 
 To go any farther we need to discuss the possible choices for the functions that define our network: the activation, error, and regularizer. We will now discuss each of these in turn. 
@@ -198,12 +198,12 @@ The activations are plotted in figure \ref{AF}. The qualitative differences are 
 
 The activations are plotted in figure \ref{AF}. The qualitative differences are mostly with the arctan function, which requires incredibly high absolute value inputs to generate output close to $0$ or $1$. The corresponding backprop functions are plotted in figure.
 
-The main difference between the different activation functions is how they back propagate the error. Notice that the hyperbolic tangent function backprops twice as much error as the sigmoid. The arctan function has a change in concavity relative to the other two. This means that it pushes values close to $0$ and $1$ at a much clower rate than it does indeterminate ones. This is reflected in the activation function itself, note how the arctan functiona pproaces the asymptotic values much slower than either the sigmoid or the hyperbolic tangent. 
+The main difference between the different activation functions is how they back propagate the error. Notice that the hyperbolic tangent function backprops twice as much error as the sigmoid. The arctan function has a change in concavity relative to the other two. This means that it pushes values close to $0$ and $1$ at a much slower rate than it does indeterminate ones. This is reflected in the activation function itself, note how the arctan function approaches the asymptotic values much more slowly than either the sigmoid or the hyperbolic tangent. 
 
 
 \subsubsection{Error Function}
 
-The error function determines how comparisons are made between the output of the neural network and the labels. We need a function that grows with the discrepency between these them. The most common choices are:
+The error function determines how comparisons are made between the output of the neural network and the labels. We need a function that grows with the discrepancy between these them. The most common choices are:
 \begin{itemize}
 \item Mean Square Error
 \ee{
@@ -230,9 +230,9 @@ In this case the gradient becomes:
 }
 You can see that the form of the gradient is similar in both the MSE and cross-entropy, in that they are both defined by the difference between the output of the network and the label. Error minima are achieved when the label mathces the output. Cross entropy has the extra parameter of inverse temperature which can be used to fine tune learning rates.
 
-\subsubsection{Regularizor}
+\subsubsection{Regularizer}
 
-One major problem with the ANN is that the values of the weights are unbounded. They can grow indiscriminantly based on pathological training data. To overcome this, regularizors are employed to create bounds and correlations between the weight vectors. Two types of regularizors are typically implemented, one which penalizes excessive weight, and another which enforces sparsity of connections, as in \cite{Field96}. 
+One major problem with the ANN is that the values of the weights are unbounded. They can grow indiscriminantly based on pathological training data. To overcome this, regularizers are employed to create bounds and correlations between the weight vectors. Two types of regularizers are typically implemented, one which penalizes excessive weight, and another which enforces sparsity of connections, as in \cite{Field96}. 
 
 \begin{itemize}
 \item Weight Penalization
@@ -246,11 +246,11 @@ R(\mathbf{W})=\sum_l\sum_{i,j}S(|w_{ij}^{(l)}|)
 \end{itemize}
 One can think of the first regulator as being a multidimenional parabaloid, with the center of the `bowl' at the origin, where all the weights vanish. As we move up the bowl, there is an associated cost with increasing the values of the weights too high. 
 
-For the latter, the function S is typically chosen from amongst $S(x)\in\{ x, e^{-x^2}, \log(1+x) \}$. There are other possibilities, but the key here is that they are engineered in a very special way. If you imagine the hypersphere centered at the origin that has constant $L_2$ norm in the weights, then the regularizor minimizes at the intersections of that hypersphere and the axes in weight space. This means that networks that activate many weights in each layer will have a greater cost associated with them than those that activate fewer weights. In essence, it picks out amongst all the networks with the same variance those which have the least number of activated weights: the sparse ones. 
+For the latter, the function S is typically chosen from amongst $S(x)\in\{ x, e^{-x^2}, \log(1+x) \}$. There are other possibilities, but the key here is that they are engineered in a very special way. If you imagine the hypersphere centered at the origin that has constant $L_2$ norm in the weights, then the regularizer minimizes at the intersections of that hypersphere and the axes in weight space. This means that networks that activate many weights in each layer will have a greater cost associated with them than those that activate fewer weights. In essence, it picks out amongst all the networks with the same variance those which have the least number of activated weights: the sparse ones. 
 
 \subsection{Equations of motion}
 
-Is there an more intuitive way of thinking about what happens tot he weight vectors during training? There is if we think of each training cycle as being a pair of moments connected by some tiny temporal interval, $\Delta t$. We can then write:
+Is there an more intuitive way of thinking about what happens to the weight vectors during training? There is if we think of each training cycle as being a pair of moments connected by some tiny temporal interval, $\Delta t$. We can then write:
 
 \ee{
 \delta\textbf{W} =& \textbf{W}(t+\Delta t)-\delta\textbf{W}(t)\nn
@@ -264,7 +264,7 @@ m\frac{d^2\textbf{W}}{dt^2}=-\gamma \frac{d\textbf{W}}{dt}-\eta\nabla C
 }
 This equation provides the key to understanding the training of the network. Along with the learning rate, $\eta$, we also now have two new constants: the inertia $m$ and a viscocity $\gamma$. Equation \ref{EoM} is nothing more than Newton's second law of motion for trajectories of ANNs in weight space!
 
-The left hand side is simply the mass times the acceleration. In computer science parlance the mass/inertia is typically refferred to as the \textbf{momentum}. The right hand side of the equation is just the net force acting on an ANN moving through weight space. The first term is a type of viscous friction, causing trajectories to slow down. In common parlance the viscocity, $\eta$, is reffered to as \textbf{weight decay}. The second term is the gradient of the cost function, which is acting like a potential energy in weight space, generating a force int he direction of steepest descent of the cost. 
+The left hand side is simply the mass times the acceleration. In computer science parlance the mass/inertia is typically refferred to as the \textbf{momentum}. The right hand side of the equation is just the net force acting on an ANN moving through weight space. The first term is a type of viscous friction, causing trajectories to slow down. In common parlance the viscocity, $\eta$, is reffered to as \textbf{weight decay}. The second term is the gradient of the cost function, which is acting like a potential energy in weight space, generating a force in the direction of steepest descent of the cost. 
 
 One can think of an ANN as a particle initialized somewhere in weight space. The ANN then begins to slide down the cost function, which is determined by both the error and the regularization. As it slides down the contours of the cost, it picks up speed, and can roll into and out of local minima, bouncing around as the force on it changes. The viscosity, however, will slowly drain kinetic energy fromt he ANN, decreasing its velocity, and eventually causing it to settle down in some minimum. 
 
@@ -289,9 +289,9 @@ The nice thing about about thinking about the ANN in terms of an equation of mot
   \label{fig:1}
 \end{figure*}
 
-The training dataset employed in this project was derived from Neurospora Crassa a filamentous fungus which is one of the primary model organisms in the study of circadian clocks due to it's genetic tractability, ease of culture and possession of a semantically similar clock to higher eukaryotes.  All samples were synchronized with a light to dark transition and three biological replicates were collected every two hours for 48 hours.  These samples were then sequenced and aligned to the neurospora genome using tophat.  Feature counting was performed with HTSeq count and normalization performed with the DESeq bioconductor package.  The resulting gene counts were then processed using JTK for Circadian classification.  The training data is comprised of a combination of the normalized gene counts at each timepoint and a classifier of circadian, non-circadian or unclassified based on the adjusted P value output by JTK. The cutoffs for these classifiers were determined by examining the P and Q value distributions for all genes along with hierarchically clustered heatmaps for each set.
+The training dataset employed in this project was derived from Neurospora Crassa, a filamentous fungus which is one of the primary model organisms in the study of circadian clocks due to its genetic tractability, ease of culture, and possession of a semantically similar clock to higher eukaryotes.  All samples were synchronized with a light to dark transition and three biological replicates were collected every two hours for 48 hours.  These samples were then sequenced and aligned to the neurospora genome using tophat.  Feature counting was performed with HTSeq count and normalization performed with the DESeq bioconductor package.  The resulting gene counts were then processed using JTK for Circadian classification.  The training data is comprised of a combination of the normalized gene counts at each time point and a classifier of circadian, non-circadian or unclassified based on the adjusted P value output by JTK. The cutoffs for these classifiers were determined by examining the P and Q value distributions for all genes along with hierarchically clustered heatmaps for each set.
 
-After processing our training data consists of 9548 temporal gene expression profiles, each one a $24-$dimensional vector. The data is divided into three classes, $\{\text{Circadian},\text{Unclassified},\text{Non-circadian}\}$. The unclassified data has some oscillatory behavior, but doesn't have a high enough $q-$value to be considered circadian. Non-circadian data is non-oscillatory. 
+After processing, our training data consists of 9548 temporal gene expression profiles, each one a $24-$dimensional vector. The data is divided into three classes, $\{\text{Circadian},\text{Unclassified},\text{Non-circadian}\}$. The unclassified data has some oscillatory behavior, but doesn't have a high enough $q-$value to be considered circadian. Non-circadian data is non-oscillatory. 
 
 One of the main problems that needs to be addressed is how to deal with the vast difference in class volumes. Proposals that seem likely to work are data perturbation and data genesis via PCA. The latter would require doing a PCA analysis of each class to determine the eigen genes in each class, and then creating new linear combinations of them with predetermined monotonically decreasing component weights. 
 
@@ -309,9 +309,9 @@ For the preliminary experiments that have been done we have made the following a
 \begin{itemize}
 \item Activation Function - Sigmoid, with a soft max output layer
 \item Error Function - Cross Entropy
-\item Regularizor - Weight Penalization
+\item Regularizer - Weight Penalization
 \item Momentum - .1
-\item Weight Decay - .001
+\item Weight Decay - .0001
 \item Learning Rate - .1
 \item Layer - {24-24-3, 24-48-3, 24-48-24-3, 48-96-3, 24-24-24-24-3, 24-48-24-24-3, 24-48-3-48-3 } 
 \end{itemize}
@@ -342,7 +342,7 @@ Our main goal in the preliminary experiments was to determine the optimal number
 \end{algorithm}
 
 \begin{algorithm}[H]
-\caption{Back Propogation}\label{back_prop}
+\caption{Back propagation}\label{back_prop}
 \begin{algorithmic}[]
 \Procedure{BackProp}{\textbf{X}, $\vc y$, \textbf{W}}\\
 \State $L \gets \text{number of layers in }\textbf{W}$
