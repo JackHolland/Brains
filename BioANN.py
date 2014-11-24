@@ -78,14 +78,14 @@ def train(data_file, vis_matrix, vis_graph, save_file=''):
 	ds = ClassificationDataSet(micro_dim, 1, nb_classes=num_classes)
 	extract_data(data_file, ds)
 	
-	tr, val = ds.splitWithProportion(0.9) #10% validation data
+	tr, val = ds.splitWithProportion(2/3.)
 	#softmax output layer
 	tr._convertToOneOfMany()
 	val._convertToOneOfMany()
 	
 	#build network
 	if save_file == '':
-		ann = buildNetwork(tr.indim, num_hidden[0], num_hidden[1], tr.outdim, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
+		ann = buildNetwork(tr.indim, num_hidden[0], tr.outdim, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
 		iteration = 0
 	else:
 		ann = NetworkReader.readFrom(save_file)
@@ -97,25 +97,45 @@ def train(data_file, vis_matrix, vis_graph, save_file=''):
 			iteration = int(match.group(1)) + 1
 	
 	#training 
-	trainer = BackpropTrainer(ann,	dataset=tr, momentum=momentum, weightdecay=weight_decay, verbose=True)
+	trainer = BackpropTrainer(ann,	dataset=tr, momentum=momentum, weightdecay=weight_decay)
 	done = False
 	errors, variations = [], []
+	testing_errors, testing_variations = [], []
 	
 	while(not done):
 		trainer.trainEpochs(num_epochs)
 		
 		# visualize iteration
 		if vis_matrix or vis_graph:
-			vertices, edges = verts_edges(ann)
+			vertices, edges = vertsEdges(ann)
 			if vis_matrix:
-				matrix_visualizer(edges)
+				matrixVisualizer(edges)
 			if vis_graph:
-				graph_visualizer(vertices, edges, iteration)
+				graphVisualizer(vertices, edges, iteration)
 		
 		# calculate and print error info
-		errors.append(calcError(trainer))
-		variations.append(calcVariation(trainer))
-		print 'iter %d, error %f, variation %f' % (iteration, errors[-1], variations[-1])
+		training_error, testing_error, training_variation, testing_variation = trainer.testOnData(), trainer.testOnData(dataset=val), calcVariation(trainer), calcVariation(trainer, dataset=val)
+		errors.append(training_error)
+		variations.append(training_variation)
+		testing_errors.append(testing_error)
+		testing_variations.append(testing_variation)
+		fig, ax1 = plt.subplots()
+		iterations = range(iteration+1)
+		ax1.plot(iterations, map(log10, errors), 'r-')
+		ax1.plot(iterations, map(log10, testing_errors), 'b-')
+		ax1.set_xlabel('iteration')
+		ax1.set_ylabel('log mean squared error (red=train, blue=test)')
+		for tick in ax1.get_yticklabels():
+			tick.set_color('b')
+		ax2 = ax1.twinx()
+		ax2.plot(iterations, map(log10, variations), 'r--')
+		ax2.plot(iterations, map(log10, testing_variations), 'b--')
+		ax2.set_ylabel('log variation (L1 error) (red=train, blue=test)')
+		for tick in ax2.get_yticklabels():
+			tick.set_color('r')
+		plt.savefig('error-3layer-48.pdf')
+		plt.close()
+		print 'iter %d, training error %f, testing error %f, training variation %f, testing variation %f' % (iteration, training_error, testing_error, training_variation, testing_variation)
 		
 		#save every <snapshot> iterations
 		if iteration % snapshot == -1:
@@ -131,11 +151,12 @@ def train(data_file, vis_matrix, vis_graph, save_file=''):
 	#testing
 	val_errors, val_variations = [], []
 	for i in range(5):
-		val_error, val_variation = calcError(trainer, dataset=val), calcVariation(trainer, dataset=val)
+		val_error, val_variation = trainer.testOnData(dataset=val), calcVariation(trainer, dataset=val)
 		print 'error %f, variation %f' % (val_error, val_variation)
 		val_errors.append(val_error)
 		val_variations.append(val_variation)
 		tr, val = ds.splitWithProportion(0.9)
+		val._convertToOneOfMany()
 	print 'average error %f, average variation %f' % (np.average(val_errors), np.average(val_variations))
 	
 	#plotting
@@ -143,18 +164,18 @@ def train(data_file, vis_matrix, vis_graph, save_file=''):
 	fig, ax1 = plt.subplots()
 	ax1.plot(iterations, map(log10, errors), 'b-')
 	ax1.set_xlabel('iteration')
-	ax1.set_ylabel('mean squared error')
+	ax1.set_ylabel('log mean squared error')
 	for tick in ax1.get_yticklabels():
 		tick.set_color('b')
 	ax1.set_title('error for validation dataset: %f, variation for validation dataset: %f' % (val_error, val_variation))
 	ax2 = ax1.twinx()
 	ax2.plot(iterations, map(log10, variations), 'r-')
-	ax2.set_ylabel('variation (L1 error)')
+	ax2.set_ylabel('log variation (L1 error)')
 	for tick in ax2.get_yticklabels():
 		tick.set_color('r')
-	plt.savefig('error-4layer-48-96.png')
+	plt.savefig('error-4layer-48-96.pdf')
 
-def verts_edges(ann):
+def vertsEdges(ann):
 	num_layers = len(num_hidden) + 2
 	nodes = []
 	for i in range(num_layers):
@@ -186,13 +207,13 @@ def verts_edges(ann):
 				edges[index] = array(conn.params).reshape(shapes[index]).tolist()
 	return nodes, edges
 
-def matrix_visualizer(edges):
+def matrixVisualizer(edges):
 	f, axs = plt.subplots(1, len(edges), sharey=True)
 	for i in range(len(edges)):
 		axs[i].imshow(edges[i], interpolation='none', shape=shapes[i])
 	f.savefig('matrices-%d.png' % iteration)
 
-def graph_visualizer(vertices, edges, iteration):
+def graphVisualizer(vertices, edges, iteration):
 	g = Graph(directed=False)
 	vpos = g.new_vertex_property("vector<float>")
 	vsize = g.new_vertex_property("float")
