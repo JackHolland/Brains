@@ -24,7 +24,7 @@ Mehra A, Baker CL, Loros JJ, and Dunlap JC.
 \bibitem{Menet14}
 Menet JS, Pescatore S, and Rosbash M.
 \newblock Clock:bmal1 is a pioneer-like transcription factor.
-\newblock {\em Genes & Development}, 28(1):8--13, 2014.
+\newblock {\em Genes \& Development}, 28(1):8--13, 2014.
 
 \bibitem{Hughes10}
 Hughes ME, Hogenesch JB, and Kornacker K.
@@ -42,5 +42,10 @@ Straume M.
 Levine JD, Funes P, Dowse HB, and Hall JC.
 \newblock Signal analysis of behavioral and molecular cycles.
 \newblock {\em BMC Neuroscience}.
+
+\bibitem{Field96}
+Olshausen BA and Field DJ.
+\newblock Emergence of simple-cell receptive field properties by learning sparse code for natural images
+\newblock{\em Nature} vol 381, 607-609, June 1996
 
 \end{thebibliography}

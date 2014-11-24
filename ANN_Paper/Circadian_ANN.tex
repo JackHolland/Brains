@@ -15,6 +15,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 
+%\usepackage{caption}
 
 
 %editing commands for the users in our group (You can make more)
@@ -54,19 +55,19 @@
 \title{Percieving Circadian Gene Expression through Artificial Neural Networks}
 
 \author{Damian Sowinski}
-\email{Damian.Sowinski.GR@dartmouth.edu}
+\email{Damian.Sowinski@dartmouth.edu}
 \affiliation{Center for Cosmic Origins \\Department of Physics and Astronomy, Dartmouth College}
 
 \author{Alexander Crowell}
-\email{Alexander.M.Crowell.GR@dartmouth.edu}
+\email{Alexander.M.Crowell@dartmouth.edu}
 \affiliation{Department of Genetics, Geisel School of Medicine, Dartmouth College}
 
 \author{Jack Holland}
-\email{Jack.E.Holland.GR@dartmouth.edu}
+\email{Jack.E.Holland@dartmouth.edu}
 \affiliation{Department of Computer Science, Dartmouth College,Hanover, NH 03755, USA}
 
 \author{Rawan Al Ghofaili}
-\email{Rawan.al.Ghofaili.GR@dartmouth.edu}
+\email{Rawan.al.Ghofaili@dartmouth.edu}
 \affiliation{Department of Computer Science, Dartmouth College,Hanover, NH 03755, USA}
 
 
@@ -74,14 +75,12 @@
 
 \begin{abstract}
 
-Science is done!
+The circadian clock regulates many critical processes, notably including metabolism and cancer suppression.  In order to improve both our understanding of the clock and drug discovery and delivery for the many disease processes it interacts with the ability to accurately classify genes as circadianly regulated based on expression data is critical.  To improve on existing classification of circadian gene expression we employed an artificial neural network and compared it's performance to the current standard algorithm $JTK_{CYCLE}$.  We employ a feed forward network, and examine the architectural constraints to optmize the ability of the network to classify circadian experession. We discuss the theoretical construction of an artificial neural network (ANN) to better understand design choices made in this work. Preliminary results are found and possible modifications to the network are discussed.
 
 \end{abstract}
 
 \maketitle
 
-\section{Introduction}
-According to scientist, \cite{paper1}, blah blah blah
 
 \section{Circadian Rhythms}
 Circadian Clocks are an adaptive response to the evolutionary necessity of anticipating day night cycles.  They occur widely in higher eukaryotes and sparsely in fungi and cyanobacteria.  Because of the widespread and longstanding evolutionary history of organisms specializing their activity to a specific phase of the day night cycle, circadian clocks, where present, have been found to regulate almost every biological process imaginable.  Notable among these are the cell cycle, DNA damage repair and metabolism, processes central to the majority of human disease \cite{Dunlap99}.  Perturbation of the clock upsets these processes as well and has been shown to contribute to disease \cite{Bass10}.  One of the most important recent trends in circadian research has been the interaction of the circadian cycle with disease treatment, specifically the timed delivery of medicine \cite{Zhang14}.  Additionally the circadian clock's modulation of such a wide variety of gene and protein expression along with the diverse processes employed to achieve that modulation provides an excellent opportunity for the study of gene regulation at every stage from transcription to degradation \cite{Mehra09,Menet14}.
@@ -110,7 +109,6 @@ With the architecture in place, we can now easily state the feed forward algorit
 
 This is all fine and dandy, but what we want is to be able to train the network based on the known labels. We need to compare the output of the network with the known label, define an error based on that comparison, and then alter the weights in the network so as to decrease that error. Furthermore, when the weights are changed, we do not want them to take on any values (one can imagine one weight becoming so high that it dominates the flow of signals in the ANN), so we must also regularize the way in which the error function is causing the weights to change. These statements can be made more precise.
 
-<<<<<<< Updated upstream
 Initialize an ANN with randomized weights. Take a datum $(\vc x^{(0)},\vc y)$ and have the ANN process the input to get an output $(\vc x^{(L)},\vc y)$. We define the cost of the function as an explicit function of the output, the \textbf{error}, and an explicit function of the weights, the \textbf{regularizer}:
 \ee{\label{CostFactorization}
 C(\vc x^{(L)},\vc y,\textbf{W})=E(\vc x^{(L)},\vc y)+R(\textbf{W})
@@ -155,16 +153,12 @@ We can generalize this for the gradient w.r.t. other layer weights by defining:
 }
 This is known as the $\delta$-rule, and is used to write the learning rate in its compact form:
 \ee{
-<<<<<<< Updated upstream
 \delta w^{(l)}_{ij}=-\eta\left(\frac{dR}{d w^{(l)}_{ij}}+\delta^{(l)}_ix^{(l-1)}_j\right)
-=======
 \frac{d E}{d w^{(L)}_{ij}}=&\sum_{k=0}^{N_L}
-=======
+}
 Take a datum $(\vc x^{(0)},\vc y)$ and process the input to get an output $d=(\vc x^{(L)},\vc y)$. Then determine the cost of this processed output and the weights of the network via:
 \ee{
-C(
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+C=C((\prod_l\theta\circ \textbf{W}^{(l)})(\vc{x}^{(0)}),\vc{y},\textbf{W})
 }
 This is all we need to define the back propogation algorithm, \ref{back_prop}.
 
@@ -192,7 +186,6 @@ The only constraints that we have on our choice is that the function be both dif
 }
 \end{itemize}
 
-
 The activations are plotted in figure \ref{AF}. The qualitative differences are mostly with the arctan function, which requires incredibly high absolute value inputs to generate output close to $0$ or $1$. The corresponding backprop functions are plotted in figure.
 
 \begin{figure*}[ht!]
@@ -203,9 +196,130 @@ The activations are plotted in figure \ref{AF}. The qualitative differences are 
 \caption{On the left we have the activation functions plotted, and the back propagated functions on the right. The sigmoid, hyperbolic tangent, and arctangent are blue, magenta, and gold, respectively. Not that the main difference }
 \end{figure*}
 
+The activations are plotted in figure \ref{AF}. The qualitative differences are mostly with the arctan function, which requires incredibly high absolute value inputs to generate output close to $0$ or $1$. The corresponding backprop functions are plotted in figure.
 
-\subsection{Algorithms}
+The main difference between the different activation functions is how they back propagate the error. Notice that the hyperbolic tangent function backprops twice as much error as the sigmoid. The arctan function has a change in concavity relative to the other two. This means that it pushes values close to $0$ and $1$ at a much clower rate than it does indeterminate ones. This is reflected in the activation function itself, note how the arctan functiona pproaces the asymptotic values much slower than either the sigmoid or the hyperbolic tangent. 
 
+
+\subsubsection{Error Function}
+
+The error function determines how comparisons are made between the output of the neural network and the labels. We need a function that grows with the discrepency between these them. The most common choices are:
+\begin{itemize}
+\item Mean Square Error
+\ee{
+E(\vc{x},\vc{y})=&\frac{1}{2}||\vc{x}-\vc{y}||^2_2\\
+\frac{\dv E}{\dv x_i}=& x_i-y_i
+}
+\item Cross Entropy
+\ee{
+E(\vc{x},\vc{y})=\sum_i^{N_0} y_i\log \sigma(x_i)&+(1-y_i)\log (1-\sigma(x_i))\\
+\frac{\dv E}{\dv x_i}=&- y_i \frac{\sigma'(x_i)}{\sigma(x_i)} 
+}
+\end{itemize}
+Cross entropy requires passing the output through an extra soft-max layer, ensuring that the total output is normalized in the $L_1$ norm. Soft max is accomplished via:
+\ee{
+\sigma(x_i)=\frac{e^{-\beta x_i}}{Z}\nn[0]
+}
+where $\beta$ is an inverse temperature. In the $0$-temperature limit $(\beta\rightarrow\infty)$, the soft max layer becomes a winner takes all layer. the denominator is the partition function:
+\ee{
+Z=\sum_{j=1}^{N_L}e^{-\beta x_j}\nn[0]
+}
+In this case the gradient becomes:
+\ee{
+\frac{\dv E}{\dv x_i}=&\beta (\sigma_i(x_i)-y_i)
+}
+You can see that the form of the gradient is similar in both the MSE and cross-entropy, in that they are both defined by the difference between the output of the network and the label. Error minima are achieved when the label mathces the output. Cross entropy has the extra parameter of inverse temperature which can be used to fine tune learning rates.
+
+\subsubsection{Regularizor}
+
+One major problem with the ANN is that the values of the weights are unbounded. They can grow indiscriminantly based on pathological training data. To overcome this, regularizors are employed to create bounds and correlations between the weight vectors. Two types of regularizors are typically implemented, one which penalizes excessive weight, and another which enforces sparsity of connections, as in \cite{Field96}. 
+
+\begin{itemize}
+\item Weight Penalization
+\ee{
+R(\mathbf{W})=\sum_l\sum_{i,j}|w_{ij}^{(l)}|^2
+}
+\item Sparsity Enforcement
+\ee{
+R(\mathbf{W})=\sum_l\sum_{i,j}S(|w_{ij}^{(l)}|)
+}
+\end{itemize}
+One can think of the first regulator as being a multidimenional parabaloid, with the center of the `bowl' at the origin, where all the weights vanish. As we move up the bowl, there is an associated cost with increasing the values of the weights too high. 
+
+For the latter, the function S is typically chosen from amongst $S(x)\in\{ x, e^{-x^2}, \log(1+x) \}$. There are other possibilities, but the key here is that they are engineered in a very special way. If you imagine the hypersphere centered at the origin that has constant $L_2$ norm in the weights, then the regularizor minimizes at the intersections of that hypersphere and the axes in weight space. This means that networks that activate many weights in each layer will have a greater cost associated with them than those that activate fewer weights. In essence, it picks out amongst all the networks with the same variance those which have the least number of activated weights: the sparse ones. 
+
+\subsection{Equations of motion}
+
+Is there an more intuitive way of thinking about what happens tot he weight vectors during training? There is if we think of each training cycle as being a pair of moments connected by some tiny temporal interval, $\Delta t$. We can then write:
+
+\ee{
+\delta\textbf{W} =& \textbf{W}(t+\Delta t)-\delta\textbf{W}(t)\nn
+=&\frac{d\textbf{W}}{dt}\Delta t+\frac{1}{2}\frac{d^2\textbf{W}}{dt^2}\Delta t^2 + O[\Delta t^3]
+}
+
+Rewriting the temporal interval as $\Delta t=2m/\gamma$ and renrmalizing the learning rate as $\eta\rightarrow 2m\eta/\gamma^2$, we find the weights obey the differential equation:
+\ee{
+\label{EoM}
+m\frac{d^2\textbf{W}}{dt^2}=-\gamma \frac{d\textbf{W}}{dt}-\eta\nabla C
+}
+This equation provides the key to understanding the training of the network. Along with the learning rate, $\eta$, we also now have two new constants: the inertia $m$ and a viscocity $\gamma$. Equation \ref{EoM} is nothing more than Newton's second law of motion for trajectories of ANNs in weight space!
+
+The left hand side is simply the mass times the acceleration. In computer science parlance the mass/inertia is typically refferred to as the \textbf{momentum}. The right hand side of the equation is just the net force acting on an ANN moving through weight space. The first term is a type of viscous friction, causing trajectories to slow down. In common parlance the viscocity, $\eta$, is reffered to as \textbf{weight decay}. The second term is the gradient of the cost function, which is acting like a potential energy in weight space, generating a force int he direction of steepest descent of the cost. 
+
+One can think of an ANN as a particle initialized somewhere in weight space. The ANN then begins to slide down the cost function, which is determined by both the error and the regularization. As it slides down the contours of the cost, it picks up speed, and can roll into and out of local minima, bouncing around as the force on it changes. The viscosity, however, will slowly drain kinetic energy fromt he ANN, decreasing its velocity, and eventually causing it to settle down in some minimum. 
+
+Implementing the equation of motion can be implemented by a second order staggered leap-from scheme:
+\ee{
+w_{i+1}=&w_i+\frac{\Delta t}{m}p_i\\
+p_{i+1/2}=&(1-\frac{\gamma\Delta t}{m})p_{i-1/2}-\eta\Delta t \nabla C_{i-1/2}
+}
+which is a simple extension of the first order back propagation algorithm \ref{back_prop} developed earlier. 
+
+The nice thing about about thinking about the ANN in terms of an equation of motion is that simple extensions based on classical and relativistic mechanics are easily implementable. Furthermore, the symmetry groups of weight space could have a profound impact on training. For example, an analysis of the subgroups of the Poincare group on weight space could shed light on how to deal with translational symmetries in the input data. These are lines of research that could be fruitful to explore in the future. 
+
+\section{Data}
+
+\begin{figure*}[!ht]
+  \centering
+  \includegraphics[width=.4\textwidth]{Circadian.png}\quad
+  \includegraphics[width=.4\textwidth]{Non-Circadian.png}\\
+  \includegraphics[width=.4\textwidth]{Unclassified.png}\quad
+  \includegraphics[width=.4\textwidth]{PvsQ.pdf}
+  \caption{Hierarchically clustered heatmaps of each class along with a plot of P vs Q for all genes}
+  \label{fig:1}
+\end{figure*}
+
+The training dataset employed in this project was derived from Neurospora Crassa a filamentous fungus which is one of the primary model organisms in the study of circadian clocks due to it's genetic tractability, ease of culture and possession of a semantically similar clock to higher eukaryotes.  All samples were synchronized with a light to dark transition and three biological replicates were collected every two hours for 48 hours.  These samples were then sequenced and aligned to the neurospora genome using tophat.  Feature counting was performed with HTSeq count and normalization performed with the DESeq bioconductor package.  The resulting gene counts were then processed using JTK for Circadian classification.  The training data is comprised of a combination of the normalized gene counts at each timepoint and a classifier of circadian, non-circadian or unclassified based on the adjusted P value output by JTK. The cutoffs for these classifiers were determined by examining the P and Q value distributions for all genes along with hierarchically clustered heatmaps for each set.
+
+After processing our training data consists of 9548 temporal gene expression profiles, each one a $24-$dimensional vector. The data is divided into three classes, $\{\text{Circadian},\text{Unclassified},\text{Non-circadian}\}$. The unclassified data has some oscillatory behavior, but doesn't have a high enough $q-$value to be considered circadian. Non-circadian data is non-oscillatory. 
+
+One of the main problems that needs to be addressed is how to deal with the vast difference in class volumes. Proposals that seem likely to work are data perturbation and data genesis via PCA. The latter would require doing a PCA analysis of each class to determine the eigen genes in each class, and then creating new linear combinations of them with predetermined monotonically decreasing component weights. 
+
+The latter, data perturbation, would require determining some perturbation parameter, $\epsilon$, and using it to perturb data vectors with random numbers drawn from a Gaussian distribution, arranged in a diagonal matrix, $\textbf{G}$.:
+\ee{
+\vc{x}' =(\mathbb{1}+\epsilon\textbf{G} )\cdot\vc{x}
+} 
+To ensure that the perturbations are not too large, the analysis described in the first paragraph can then be utilized to determine the $q$-values of the new data. In this way we can supplement known data with synthetic data and balance the class volumes. 
+
+\section{Experiment}
+
+
+
+For the preliminary experiments that have been done we have made the following architectural choices:
+\begin{itemize}
+\item Activation Function - Sigmoid, with a soft max output layer
+\item Error Function - Cross Entropy
+\item Regularizor - Weight Penalization
+\item Momentum - .1
+\item Weight Decay - .001
+\item Learning Rate - .1
+\item Layer - {24-24-3, 24-48-3, 24-48-24-3, 48-96-3, 24-24-24-24-3, 24-48-24-24-3, 24-48-3-48-3 } 
+\end{itemize}
+Our main goal in the preliminary experiments was to determine the optimal number, and size, of the hidden layers in the ANN. Future expriments will explore changes in the other parameters of the network. 
+\section{Conclusion}
+
+
+\section{Algorithms}
 
 \begin{algorithm}[H]
 \caption{Feed Forward}\label{feed_forward}
@@ -289,35 +403,9 @@ The activations are plotted in figure \ref{AF}. The qualitative differences are 
 \end{algorithmic}
 \end{algorithm}
 
-\section{Data}
-
-\begin{figure*}[!ht]
-  \centering
-  \subfloat{\includegraphics[width=.4\textwidth]{Circadian.png}}\quad
-  \subfloat{\includegraphics[width=.4\textwidth]{Non-Circadian.png}}\\
-  \subfloat{\includegraphics[width=.4\textwidth]{Unclassified.png}}\quad
-  \subfloat{\includegraphics[width=.4\textwidth]{PvsQ.pdf}}
-  \caption{Hierarchically clustered heatmaps of each class along with a plot of P vs Q for all genes}
-  \label{fig:1}
-\end{figure*}
-
-The training dataset employed in this project was derived from Neurospora Crassa a filamentous fungus which is one of the primary model organisms in the study of circadian clocks due to it's genetic tractability, ease of culture and possession of a semantically similar clock to higher eukaryotes.  All samples were synchronized with a light to dark transition and three biological replicates were collected every two hours for 48 hours.  These samples were then sequenced and aligned to the neurospora genome using tophat.  Feature counting was performed with HTSeq count and normalization performed with the DESeq bioconductor package.  The resulting gene counts were then processed using JTK for Circadian classification.  The training data is comprised of a combination of the normalized gene counts at each timepoint and a classifier of circadian, non-circadian or unclassified based on the adjusted P value output by JTK. The cutoffs for these classifiers were determined by examining the P and Q value distributions for all genes along with hierarchically clustered heatmaps for each set.
-
-
-
-
-\section{Experiment}
-
-\section{Conclusion}
-
-<<<<<<< Updated upstream
+\section{Bibliography}
 \bibliographystyle{unsrt}
 \bibliography{bibliography}
 
-=======
-\begin{thebibliography}{99}
-\bibitem{paper1} J. Bekenstein, Phys. Rev. D {\bf 23}, 287 (1981).
-\end{thebibliography}
->>>>>>> Stashed changes
 
 \end{document}

@@ -1,10 +1,13 @@
-\BOOKMARK [1][-]{section*.1}{Introduction}{}% 1
-\BOOKMARK [1][-]{section*.2}{Circadian Rhythms}{}% 2
-\BOOKMARK [1][-]{section*.3}{Artificial Neural Networks}{}% 3
-\BOOKMARK [2][-]{section*.4}{Function Choices}{section*.3}% 4
-\BOOKMARK [3][-]{section*.5}{Activation Function}{section*.4}% 5
-\BOOKMARK [2][-]{section*.6}{Algorithms}{section*.3}% 6
-\BOOKMARK [1][-]{section*.7}{Data}{}% 7
-\BOOKMARK [1][-]{section*.8}{Experiment}{}% 8
-\BOOKMARK [1][-]{section*.9}{Conclusion}{}% 9
-\BOOKMARK [1][-]{section*.10}{References}{}% 10
+\BOOKMARK [1][-]{section*.1}{Circadian Rhythms}{}% 1
+\BOOKMARK [1][-]{section*.2}{Artificial Neural Networks}{}% 2
+\BOOKMARK [2][-]{section*.3}{Function Choices}{section*.2}% 3
+\BOOKMARK [3][-]{section*.4}{Activation Function}{section*.3}% 4
+\BOOKMARK [3][-]{section*.5}{Error Function}{section*.3}% 5
+\BOOKMARK [3][-]{section*.6}{Regularizor}{section*.3}% 6
+\BOOKMARK [2][-]{section*.7}{Equations of motion}{section*.2}% 7
+\BOOKMARK [1][-]{section*.8}{Data}{}% 8
+\BOOKMARK [1][-]{section*.9}{Experiment}{}% 9
+\BOOKMARK [1][-]{section*.10}{Conclusion}{}% 10
+\BOOKMARK [1][-]{section*.11}{Algorithms}{}% 11
+\BOOKMARK [1][-]{section*.12}{Bibliography}{}% 12
+\BOOKMARK [1][-]{section*.13}{References}{}% 13
