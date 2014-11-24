@@ -186,17 +186,16 @@ The only constraints that we have on our choice is that the function be both dif
 }
 \end{itemize}
 
-The activations are plotted in figure \ref{AF}. The qualitative differences are mostly with the arctan function, which requires incredibly high absolute value inputs to generate output close to $0$ or $1$. The corresponding backprop functions are plotted in figure.
+The activations are plotted in the left of figure \ref{AF10}. The qualitative differences are mostly with the arctan function, which requires incredibly high absolute value inputs to generate output close to $0$ or $1$. The corresponding backprop functions are plotted in the right of figure \ref{AF10}.
 
 \begin{figure*}[ht!]
-\label{AF}
+\label{AF10}
 \centering
 \includegraphics[width=0.48\textwidth]{ActivationFunctions.png}\hfill
 \includegraphics[width=0.48\textwidth]{BackPropActivationFunctions.png}
 \caption{On the left we have the activation functions plotted, and the back propagated functions on the right. The sigmoid, hyperbolic tangent, and arctangent are blue, magenta, and gold, respectively. Not that the main difference }
 \end{figure*}
 
-The activations are plotted in figure \ref{AF}. The qualitative differences are mostly with the arctan function, which requires incredibly high absolute value inputs to generate output close to $0$ or $1$. The corresponding backprop functions are plotted in figure.
 
 The main difference between the different activation functions is how they back propagate the error. Notice that the hyperbolic tangent function backprops twice as much error as the sigmoid. The arctan function has a change in concavity relative to the other two. This means that it pushes values close to $0$ and $1$ at a much slower rate than it does indeterminate ones. This is reflected in the activation function itself, note how the arctan function approaches the asymptotic values much more slowly than either the sigmoid or the hyperbolic tangent. 
 
@@ -275,35 +274,34 @@ p_{i+1/2}=&(1-\frac{\gamma\Delta t}{m})p_{i-1/2}-\eta\Delta t \nabla C_{i-1/2}
 }
 which is a simple extension of the first order back propagation algorithm \ref{back_prop} developed earlier. 
 
-The nice thing about about thinking about the ANN in terms of an equation of motion is that simple extensions based on classical and relativistic mechanics are easily implementable. Furthermore, the symmetry groups of weight space could have a profound impact on training. For example, an analysis of the subgroups of the Poincare group on weight space could shed light on how to deal with translational symmetries in the input data. These are lines of research that could be fruitful to explore in the future. 
+The nice thing about about thinking about the ANN in terms of an equation of motion is that simple extensions based on classical and relativistic mechanics are easily implementable. 
+
+For example, instead of having a linear viscous force acting on the ANN, a more realistic model could use a quadratic viscosity. In another case, rather than using Newton's laws to find the trajectory, it would be fairly straightforward to instead use relativistice equations of motion by incorporating a speed limit for the propagation of information in weight space. Furthermore, the symmetry groups of weight space could have a profound impact on training. For example, an analysis of the subgroups of the Poincare group on weight space could shed light on how to deal with translational symmetries in the input data. These are lines of research that could be fruitful to explore in the future. 
+\begin{figure*}[ht!]
+\centering
+\includegraphics[width=.4\textwidth]{Circadian.png}\hspace{1cm}
+\includegraphics[width=.4\textwidth]{Non-Circadian.png}\\
+\includegraphics[width=.4\textwidth]{Unclassified.png}\hspace{1cm}
+\includegraphics[width=.4\textwidth]{PvsQ.pdf}
+\caption{Hierarchically clustered heatmaps of each class along with a plot of P vs Q for all genes. You can see the oscillatory behavior of the circadian genes oover the course of 48hrs. The unclassified genes have some oscillatory behavior, though not on a 24-hour cycle. Non-cicadian data have no discernable oscillatory behavior. The lower right plot displays the cut-offs used to generate the classes. }
+\label{data_classes}
+\end{figure*}
 
 \section{Data}
 
-\begin{figure*}[!ht]
-  \centering
-  \includegraphics[width=.4\textwidth]{Circadian.png}\quad
-  \includegraphics[width=.4\textwidth]{Non-Circadian.png}\\
-  \includegraphics[width=.4\textwidth]{Unclassified.png}\quad
-  \includegraphics[width=.4\textwidth]{PvsQ.pdf}
-  \caption{Hierarchically clustered heatmaps of each class along with a plot of P vs Q for all genes}
-  \label{fig:1}
-\end{figure*}
-
 The training dataset employed in this project was derived from Neurospora Crassa, a filamentous fungus which is one of the primary model organisms in the study of circadian clocks due to its genetic tractability, ease of culture, and possession of a semantically similar clock to higher eukaryotes.  All samples were synchronized with a light to dark transition and three biological replicates were collected every two hours for 48 hours.  These samples were then sequenced and aligned to the neurospora genome using tophat.  Feature counting was performed with HTSeq count and normalization performed with the DESeq bioconductor package.  The resulting gene counts were then processed using JTK for Circadian classification.  The training data is comprised of a combination of the normalized gene counts at each time point and a classifier of circadian, non-circadian or unclassified based on the adjusted P value output by JTK. The cutoffs for these classifiers were determined by examining the P and Q value distributions for all genes along with hierarchically clustered heatmaps for each set.
 
-After processing, our training data consists of 9548 temporal gene expression profiles, each one a $24-$dimensional vector. The data is divided into three classes, $\{\text{Circadian},\text{Unclassified},\text{Non-circadian}\}$. The unclassified data has some oscillatory behavior, but doesn't have a high enough $q-$value to be considered circadian. Non-circadian data is non-oscillatory. 
+After processing, our training data consists of 9548 temporal gene expression profiles, each one a $24-$dimensional vector. The data is divided into three classes, $\{\text{Circadian},\text{Unclassified},\text{Non-circadian}\}$ with a $611/1213/7724$. The unclassified data has some oscillatory behavior, but doesn't have a high enough $q-$value to be considered circadian. Non-circadian data is non-oscillatory. The data is displayed in \ref{data_classes}
 
 One of the main problems that needs to be addressed is how to deal with the vast difference in class volumes. Proposals that seem likely to work are data perturbation and data genesis via PCA. The latter would require doing a PCA analysis of each class to determine the eigen genes in each class, and then creating new linear combinations of them with predetermined monotonically decreasing component weights. 
 
-The latter, data perturbation, would require determining some perturbation parameter, $\epsilon$, and using it to perturb data vectors with random numbers drawn from a Gaussian distribution, arranged in a diagonal matrix, $\textbf{G}$.:
+The latter, data perturbation, uses two parameters, $\epsilon_M$ and $\epsilon_A$, to perturb the data vectors both multiplicatively and additively with random numbers drawn from a uniform distribution on $[-1/2,1/2]$. The random numbers are arranged in a diagonal matrix, $\textbf{G}_M$ and a vector $\vc{G}_A$, the multiplicative and additive perturbations, respectively:
 \ee{
-\vc{x}' =(\mathbb{1}+\epsilon\textbf{G} )\cdot\vc{x}
+\vc{x}' =(\mathbb{1}+\epsilon_M\textbf{G}_M )\cdot\vc{x}+\epsilon_A\vc{G}_A
 } 
-To ensure that the perturbations are not too large, the analysis described in the first paragraph can then be utilized to determine the $q$-values of the new data. In this way we can supplement known data with synthetic data and balance the class volumes. 
+To ensure that the perturbations are not too large, the analysis described in the first paragraph can then be utilized to determine the $q$-values of the new data. In this way we can supplement known data with synthetic data and balance the class volumes. We use this method in our experiment to equalize the class volumes. Using both $\epsilon=.2$ we expand the volume of the circadian data by $10$, and the unclassified data by $5$. Out final data split is 6110/6065/7724. 
 
 \section{Experiment}
-
-
 
 For the preliminary experiments that have been done we have made the following architectural choices:
 \begin{itemize}
@@ -315,12 +313,41 @@ For the preliminary experiments that have been done we have made the following a
 \item Learning Rate - .1
 \item Layer - {24-24-3, 24-48-3, 24-48-24-3, 48-96-3, 24-24-24-24-3, 24-48-24-24-3, 24-48-3-48-3 } 
 \end{itemize}
-Our main goal in the preliminary experiments was to determine the optimal number, and size, of the hidden layers in the ANN. Future expriments will explore changes in the other parameters of the network. 
-\section{Conclusion}
+
+Initially we goofed around with the weight decay and the momentum. What we found was that as the weight decay gets larger or the momentum gets smaller, the ANN tends to fall into a local minimum and plateau at a larger training error. After several runs with high training errors we settled on the above values for both constants.
+
+We trained the network iterating over all the data 5 times (each of which we call an epoch). We use a winner takes all classification on the output, as well as an $L_1$-norm error. The latter is a useful measure of the confidence we have in our winner takes all classification. The larger the $L_1$-norm is, the more deviation there is in the output classes, leading us to believe that the winner takes all could be a win by a small margin. We plot these results for a 4 and 5 layer network in figure \ref{EG1}.
+
+Initially we did not implement a class volume equalization scheme, and found that the non-circadian class overwhelmed the ANN. Errors reflected the discrepency in the class sizes and not the actual performance of the network for all the architectures mentioned above. To fix this we then began using data perturbation to equalize class volumes. Increasing the Circadian and Unclassified classes to have similar volumes to the non-circadian data instantly resulted in better error rates within $1-2$ iterations. We used a 2-1 split of the data into training and test sets, and plot both the training and test winner take all error, as well as the $L_1$-norm error. We plot the results in figure \ref{EG2} for the 24-48-3 network. 
+
+The training error results in this run are around 2\%, and the test error clocks in at around 4\%. The confidence in both, as measured by the $L_1$-norm is about an order of magnitude higher. Thhis is a good error, but there's a little bit of worry about whether or not the class volume utilization has properly generaed new test data. Typically the test error starts to get larger after a certain number of iterations, as the network begins to overlearn hte given training data. We do not see this happening in \ref{EGs}, though it could be that $100$ iterations is not enough for overfitting to start to become relevant. Longer tests need to be performed.
+
+ 
+
+\begin{figure*}[ht!]
+\label{EG1}
+\centering
+\includegraphics[width=.48\textwidth]{error-4layer-48-96.png}\hspace{.2 cm}
+\includegraphics[width=.48\textwidth]{error-5layer-48-3-48.png}
+\caption{The error rates during training for two network architectures on a logarithmic scale. Both the $L_1$ and $L_2$ errors decrease as more iterations occur. They tend to flatline by 100 iterations, however this could be indicative of overfitting the training data. }
+\end{figure*}
+
+\begin{figure*}[ht!]
+\label{EG2}
+\centering
+\includegraphics[width=1\textwidth]{error-3layer-48.pdf}
+\caption{The winner take all error, and confidence as measured byt he $L_1$-norm for both the trainging data (red) and the test data (blue). Both begin to plateau after about 40 iterations. }
+\end{figure*}
+
+\section{Final Remarks}
+After trying several different network architectures, we found one that has a pretty decent training and test error. We are a little dubious of our method of class volume expansion using data perturbation, because we feel that the resulting data perhaps copies the original data too closely. Given more time, we would hope that implementing data genesis via PCA would lead to more varied data in each class.
+
+Fully exploring deeper networks to see how well they do at the classification task is important. Though we tested a few shallow architectures, it would be nice to also get results for much deeper networks (those consisting of 6+ layers). Examining the use of a sparsity regularizer would have been nice too, however there was insufficient time for us to really get to play around with all the possible parameters as we would have liked.
+
+We would also like to direct you to our github page, where we have created a movie of the weights changing over time as we train a network. It's a neat visualization and allows one to see how the weighs slowly settly in on a minimum of the cost function. 
 
 
 \section{Algorithms}
-
 \begin{algorithm}[H]
 \caption{Feed Forward}\label{feed_forward}
 \begin{algorithmic}[]
