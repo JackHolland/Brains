@@ -1,6 +1,6 @@
 {
 	"micro_dim":	24,
-	"num_hidden":	[48,12],
+	"num_hidden":	[48, 96],
 	"inc_bias":	1,
 	"momentum":	0.1,
 	"weight_decay":	0.0001,
