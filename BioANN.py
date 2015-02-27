@@ -22,7 +22,7 @@ from math import log10
 
 #Default parameters
 micro_dim = 24 #the number of input nodes
-num_classes = 3
+num_classes = 2
 num_hidden = [48,12] #number of hidden layers
 shapes = [(24, 48), (48, 12)]
 inc_bias = True #to include bias or not
@@ -78,10 +78,10 @@ def train(data_file, vis_matrix, vis_graph, save_file=''):
 	ds = ClassificationDataSet(micro_dim, 1, nb_classes=num_classes)
 	extract_data(data_file, ds)
 	
-	tr, val = ds.splitWithProportion(2/3.)
+	tr, val = ds.splitWithProportion(4/5.)
 	#softmax output layer
-	tr._convertToOneOfMany()
-	val._convertToOneOfMany()
+	#tr._convertToOneOfMany()
+	#val._convertToOneOfMany()
 	
 	#build network
 	if save_file == '':
