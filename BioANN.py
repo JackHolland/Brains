@@ -27,20 +27,19 @@ num_hidden = [48,12] #number of hidden layers
 shapes = [(24, 48), (48, 12)]
 inc_bias = True #to include bias or not
 
-momentum = 0.1 #momentum 
+momentum = 0.3 #momentum 
 weight_decay = 0.1 #weight decay
 
 myError = 10.0
 
 
-max_iterations = 1000000 #maximum number of iterations
+max_iterations = 100000 #maximum number of iterations
 num_epochs = 5 #number of ephochs at every iteration
 snapshot = 10 #when to snapshot the ANN
 
 def load_params():
 	with open('params', 'r') as f_in:
 		params = json.load(f_in)
-
 	global micro_dim
 	global num_hidden
 	global inc_bias
@@ -70,18 +69,27 @@ def extract_data(filename, ds):
 			cells = line.split(',')
 			label = int(cells[1])
 			microarray = [float(i) for i in cells[3:]]
-			ds.addSample(microarray, (label))
+			ds.addSample(microarray, label)
 
 def train(data_file, vis_matrix, vis_graph, save_file=''):
 	load_params()
 	#import dataset
 	ds = ClassificationDataSet(micro_dim, 1, nb_classes=num_classes)
 	extract_data(data_file, ds)
+	#ds._convertToOneOfMany()
+	tr_temp, val_temp = ds.splitWithProportion(4/5.)
+	#tr, val = ds.splitWithProportion(4/5.)
+	tr = ClassificationDataSet(micro_dim, 1, nb_classes=num_classes)
+	val = ClassificationDataSet(micro_dim, 1, nb_classes=num_classes)
 	
-	tr, val = ds.splitWithProportion(4/5.)
+	for n in xrange(0, tr_temp.getLength()):
+		tr.addSample(tr_temp.getSample(n)[0], tr_temp.getSample(n)[1])
+	for n in xrange(0, val_temp.getLength()):
+		val.addSample(val_temp.getSample(n)[0], val_temp.getSample(n)[1])
+
 	#softmax output layer
-	#tr._convertToOneOfMany()
-	#val._convertToOneOfMany()
+	tr._convertToOneOfMany()
+	val._convertToOneOfMany()
 	
 	#build network
 	if save_file == '':
