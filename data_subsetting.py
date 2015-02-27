@@ -15,8 +15,8 @@ def extract_data(filename):
 def subset_data(pddf):
 	train = pddf[pd.concat([pddf['label'] == '1', pddf['label'] == '-1'], axis=1).any(axis=1)].copy(deep=True)
 	test = pddf[pddf['label'] == '0'].copy(deep=True)
-	train.to_csv('train.csv')
-	test.to_csv('test.csv')
+	train.to_csv('train.csv',index = False)
+	test.to_csv('test.csv',index = False)
 	return
 
 
