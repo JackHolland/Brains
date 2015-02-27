@@ -84,8 +84,12 @@ def train(data_file, vis_matrix, vis_graph, save_file=''):
 	val._convertToOneOfMany()
 	
 	#build network
+	layer_sizes = [tr.indim]
+	for layer_size in num_hidden:
+		layer_sizes.append(layer_size)
+	layer_sizes.append(tr.outdim)
 	if save_file == '':
-		ann = buildNetwork(tr.indim, num_hidden[0], tr.outdim, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
+		ann = buildNetwork(layer_sizes, hiddenclass=SigmoidLayer, recurrent=False, outclass=SoftmaxLayer, bias=inc_bias)
 		iteration = 0
 	else:
 		ann = NetworkReader.readFrom(save_file)
