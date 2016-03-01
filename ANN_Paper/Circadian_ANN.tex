@@ -154,7 +154,6 @@ We can generalize this for the gradient w.r.t. other layer weights by defining:
 This is known as the $\delta$-rule, and is used to write the learning rate in its compact form:
 \ee{
 \delta w^{(l)}_{ij}=-\eta\left(\frac{dR}{d w^{(l)}_{ij}}+\delta^{(l)}_ix^{(l-1)}_j\right)
-\frac{d E}{d w^{(L)}_{ij}}=&\sum_{k=0}^{N_L}
 }
 Take a datum $(\vc x^{(0)},\vc y)$ and process the input to get an output $d=(\vc x^{(L)},\vc y)$. Then determine the cost of this processed output and the weights of the network via:
 \ee{
@@ -346,6 +345,9 @@ Fully exploring deeper networks to see how well they do at the classification ta
 
 We would also like to direct you to our github page, where we have created a movie of the weights changing over time as we train a network. It's a neat visualization and allows one to see how the weighs slowly settly in on a minimum of the cost function. 
 
+\section{Bibliography}
+\bibliographystyle{unsrt}
+\bibliography{bibliography}
 
 \section{Algorithms}
 \begin{algorithm}[H]
@@ -429,10 +431,5 @@ We would also like to direct you to our github page, where we have created a mov
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-
-\section{Bibliography}
-\bibliographystyle{unsrt}
-\bibliography{bibliography}
-
 
 \end{document}
